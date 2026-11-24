@@ -7,6 +7,12 @@ export function formatNumber(n: number, lang: Lang, maxFractionDigits = 2): stri
   return new Intl.NumberFormat(locales[lang], { maximumFractionDigits: maxFractionDigits }).format(n)
 }
 
+/** Money: whole amounts as-is, otherwise always two decimals (৳12.50, not ৳12.5). */
 export function formatTaka(n: number, lang: Lang): string {
-  return `৳${formatNumber(n, lang)}`
+  const decimals = Number.isInteger(n) ? 0 : 2
+  const text = new Intl.NumberFormat(locales[lang], {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  }).format(n)
+  return `৳${text}`
 }

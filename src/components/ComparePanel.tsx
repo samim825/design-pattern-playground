@@ -24,7 +24,7 @@ export function ComparePanel({
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="grid gap-6 xl:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
         {columns.map((col) => (
           <div key={col.key} className="flex min-w-0 flex-col gap-3">
             <div>
@@ -57,7 +57,7 @@ export function ComparePanel({
         ))}
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <Card className="border-emerald-200 bg-emerald-50/60 p-5 dark:border-emerald-500/30 dark:bg-emerald-500/10">
           <h3 className="mb-2 font-semibold text-emerald-800 dark:text-emerald-300">💡 {t('pattern.benefit')}</h3>
           <p className="prose-text text-sm">{compare.benefit}</p>

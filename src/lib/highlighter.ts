@@ -10,6 +10,9 @@ function getHighlighter(): Promise<HighlighterCore> {
     themes: [import('shiki/themes/github-light.mjs'), import('shiki/themes/github-dark.mjs')],
     langs: [import('shiki/langs/typescript.mjs')],
     engine: createJavaScriptRegexEngine(),
+  }).catch((err: unknown) => {
+    highlighter = undefined // allow a retry next time instead of caching the failure
+    throw err
   })
   return highlighter
 }

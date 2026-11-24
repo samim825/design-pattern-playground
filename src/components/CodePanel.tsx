@@ -1,9 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { ThemedToken } from 'shiki/core'
-import { useLang } from '@/i18n'
 import type { PreparedCode } from '@/lib/code'
-import { formatNumber } from '@/lib/format'
 import { CheckIcon, CopyIcon } from './ui/icons'
 
 function useTokens(code: string): ThemedToken[][] | null {
@@ -49,7 +47,6 @@ export function CodePanel({
   maxHeight?: string
 }) {
   const { t } = useTranslation()
-  const lang = useLang()
   const tokens = useTokens(prepared.code)
   const scrollRef = useRef<HTMLDivElement>(null)
   const [copied, setCopied] = useState(false)
@@ -117,7 +114,7 @@ export function CodePanel({
                       active ? 'text-amber-600 dark:text-amber-300' : 'text-slate-400 dark:text-slate-600'
                     }`}
                   >
-                    {formatNumber(i + 1, lang)}
+                    {i + 1}
                   </span>
                   <span className="whitespace-pre">
                     {tokens?.[i]

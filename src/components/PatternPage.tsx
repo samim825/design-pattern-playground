@@ -45,7 +45,7 @@ export function PatternPage({ pattern }: { pattern: PatternDefinition }) {
 
       {/* 1. Scenario */}
       <Section id="scenario" number={1} title={t('pattern.sections.scenario')}>
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
           <Card className="p-6">
             <h3 className="mb-3 text-lg font-semibold text-slate-900 dark:text-white">{content.scenario.title}</h3>
             <div className="prose-text flex flex-col gap-3 leading-relaxed">
@@ -68,7 +68,7 @@ export function PatternPage({ pattern }: { pattern: PatternDefinition }) {
       </Section>
 
       {/* 2 + 3. Visual and synced code, side by side on wide screens */}
-      <div className="grid gap-10 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] xl:gap-6">
+      <div className="grid grid-cols-1 gap-10 xl:grid-cols-2 xl:gap-6">
         <Section id="visual" number={2} title={t('pattern.sections.visual')}>
           <Suspense
             fallback={

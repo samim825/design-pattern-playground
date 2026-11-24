@@ -1,10 +1,14 @@
 import type { Category, PatternDefinition } from '@/types/pattern'
 import { catalog } from './catalog'
+import { strategy } from './strategy'
 
 /**
- * Every BUILT pattern. To add one: create src/patterns/<id>/ and add ONE line here.
+ * Every BUILT pattern, in sidebar order. To add one: create src/patterns/<id>/,
+ * then import it above and add it to this list.
  */
-export const patterns: PatternDefinition[] = []
+export const patterns: PatternDefinition[] = [
+  strategy,
+]
 
 export function getPattern(id: string | undefined): PatternDefinition | undefined {
   return patterns.find((p) => p.id === id)

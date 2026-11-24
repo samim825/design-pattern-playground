@@ -14,7 +14,7 @@ export function Section({
   className?: string
 }) {
   return (
-    <section id={id} aria-labelledby={`${id}-title`} className={`scroll-mt-20 ${className}`}>
+    <section id={id} aria-labelledby={`${id}-title`} className={`min-w-0 scroll-mt-20 ${className}`}>
       <h2 id={`${id}-title`} className="mb-4 flex items-center gap-3 text-xl font-semibold text-slate-900 dark:text-white">
         {number !== undefined && (
           <span className="grid size-7 shrink-0 place-items-center rounded-full bg-indigo-600 text-sm font-bold text-white dark:bg-indigo-500">
