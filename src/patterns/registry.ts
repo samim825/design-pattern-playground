@@ -4,6 +4,7 @@ import { builder } from './builder'
 import { catalog } from './catalog'
 import { factoryMethod } from './factory-method'
 import { prototype } from './prototype'
+import { singleton } from './singleton'
 import { strategy } from './strategy'
 
 /**
@@ -15,6 +16,7 @@ export const patterns: PatternDefinition[] = [
   abstractFactory,
   builder,
   prototype,
+  singleton,
   strategy,
 ]
 
