@@ -63,52 +63,52 @@ var receipt = checkout.Pay(1250m); // @step:client-pay,done
 
 const without = `
 // {{withoutIntro}}
-Receipt Checkout(decimal amount, string method)
+Receipt Checkout(decimal amount, string method) // @step:l1-start
 {
     decimal fee;
 
     switch (method)
     {
-        case "bkash":
+        case "bkash": // @step:l1-bkash
             fee = amount * 0.0185m;
-            VerifyOtp(customer.Phone);
-            ConfirmPin(customer.Phone);
+            VerifyOtp(customer.Phone); // @step:l1-bkash-otp
+            ConfirmPin(customer.Phone); // @step:l1-bkash-pin
             break;
-        case "nagad":
+        case "nagad": // @step:l1-nagad
             fee = amount * 0.01m;
-            VerifyOtp(customer.Phone);
+            VerifyOtp(customer.Phone); // @step:l1-nagad-otp
             break;
-        case "card":
+        case "card": // @step:l1-card
             fee = amount * 0.025m;
-            Run3DSecure(customer.Card);
-            AuthorizeWithBank(customer.Card, amount + fee);
+            Run3DSecure(customer.Card); // @step:l1-card-3ds
+            AuthorizeWithBank(customer.Card, amount + fee); // @step:l1-card-bank
             break;
         default:
             throw new ArgumentException("Unknown payment method: " + method);
     }
-    // {{withoutTodo}}
+    // {{withoutTodo}} // @step:l1-todo
 
-    return new Receipt(method, amount, fee, amount + fee);
+    return new Receipt(method, amount, fee, amount + fee); // @step:l1-result
 }
 `
 
 const withPattern = `
 // {{withAdd}}
-class RocketPayment : IPaymentStrategy
+class RocketPayment : IPaymentStrategy // @step:build-strategy
 {
     public Receipt Pay(decimal amount)
     {
-        var fee = amount * 0.018m;
-        VerifyOtp(customer.Phone);
-        return new Receipt("Rocket", amount, fee, amount + fee);
+        var fee = amount * 0.018m; // @step:rocket-fee
+        VerifyOtp(customer.Phone); // @step:rocket-otp
+        return new Receipt("Rocket", amount, fee, amount + fee); // @step:rocket-receipt
     }
 }
 
 var checkout = new Checkout(new BkashPayment());
 checkout.Pay(1250m);
 
-checkout.SetStrategy(new RocketPayment()); // {{withSwap}}
-checkout.Pay(1250m);
+checkout.SetStrategy(new RocketPayment()); // {{withSwap}} // @step:build-plug,rocket-set
+checkout.Pay(1250m); // @step:rocket-pay,rocket-done
 `
 
 export const csharp: CodeSet = {

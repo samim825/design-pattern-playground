@@ -61,29 +61,29 @@ Receipt receipt = checkout.pay(1250); // @step:client-pay,done
 
 const without = `
 // {{withoutIntro}}
-Receipt checkout(double amount, String method) {
+Receipt checkout(double amount, String method) { // @step:l1-start
     double fee;
 
     switch (method) {
-        case "bkash" -> {
+        case "bkash" -> { // @step:l1-bkash
             fee = amount * 0.0185;
-            verifyOtp(customer.phone());
-            confirmPin(customer.phone());
+            verifyOtp(customer.phone()); // @step:l1-bkash-otp
+            confirmPin(customer.phone()); // @step:l1-bkash-pin
         }
-        case "nagad" -> {
+        case "nagad" -> { // @step:l1-nagad
             fee = amount * 0.01;
-            verifyOtp(customer.phone());
+            verifyOtp(customer.phone()); // @step:l1-nagad-otp
         }
-        case "card" -> {
+        case "card" -> { // @step:l1-card
             fee = amount * 0.025;
-            run3DSecure(customer.card());
-            authorizeWithBank(customer.card(), amount + fee);
+            run3DSecure(customer.card()); // @step:l1-card-3ds
+            authorizeWithBank(customer.card(), amount + fee); // @step:l1-card-bank
         }
         default -> throw new IllegalArgumentException("Unknown payment method: " + method);
     }
-    // {{withoutTodo}}
+    // {{withoutTodo}} // @step:l1-todo
 
-    return new Receipt(method, amount, fee, amount + fee);
+    return new Receipt(method, amount, fee, amount + fee); // @step:l1-result
 }
 
 checkout(1250, "bkash");
@@ -91,19 +91,19 @@ checkout(1250, "bkash");
 
 const withPattern = `
 // {{withAdd}}
-class RocketPayment implements PaymentStrategy {
+class RocketPayment implements PaymentStrategy { // @step:build-strategy
     public Receipt pay(double amount) {
-        double fee = amount * 0.018;
-        verifyOtp(customer.phone());
-        return new Receipt("Rocket", amount, fee, amount + fee);
+        double fee = amount * 0.018; // @step:rocket-fee
+        verifyOtp(customer.phone()); // @step:rocket-otp
+        return new Receipt("Rocket", amount, fee, amount + fee); // @step:rocket-receipt
     }
 }
 
 Checkout checkout = new Checkout(new BkashPayment());
 checkout.pay(1250);
 
-checkout.setStrategy(new RocketPayment()); // {{withSwap}}
-checkout.pay(1250);
+checkout.setStrategy(new RocketPayment()); // {{withSwap}} // @step:build-plug,rocket-set
+checkout.pay(1250); // @step:rocket-pay,rocket-done
 `
 
 export const java: CodeSet = {

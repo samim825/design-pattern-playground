@@ -29,9 +29,17 @@ Follow these steps in order.
    - **Roles:** map each pattern participant (e.g. Director, Builder, ConcreteBuilder,
      Product) to an object in the story. Every role appears as a `<Node>` whose
      `role` label is the pattern term.
-   - **Interaction:** what the learner chooses (at least one meaningful choice, e.g. a
-     preset, a type or an option) and what then runs. Changing the choice must visibly
-     change what happens. That's the "aha" moment.
+   - **Interaction: a 3-level game.** Learners learn by playing (see
+     [Learn-by-playing games](#learn-by-playing-games)):
+     1. **No pattern**: the learner does the messy job by hand; wrong choices fail in a
+        fun way. Code panel shows `without`.
+     2. **Use the pattern**: the same job through the pattern's roles; the learner only
+        makes the pattern-level choice. Code panel shows `main`.
+     3. **Extend it**: a new requirement arrives; the learner builds the new class(es)
+        by answering 2 concept questions, sees "0 lines of old code edited", and uses it.
+        Code panel shows `with`.
+     Every turn ends with Play running an animated, code-synced timeline. That's the
+     "aha" moment.
    - **Step list:** an ordered list of step ids. Each id must match a
      `// @step:<id>` marker in `main` of **every** code language, and each must have a
      caption in `content.steps`.
@@ -85,8 +93,11 @@ Follow these steps in order.
 ### Definition of done (quality bar)
 
 - [ ] All 4 sections are filled. The scenario has 2–3 short paragraphs, a `problem` and an `intent`.
-- [ ] The visual has at least one learner choice. Pressing Play runs at least 5 animated
-      steps, where messages or objects visibly move between `<Node>`s.
+- [ ] The visual is a 3-level game (no pattern → use it → extend it) built with
+      `components/game`, with wrong-answer hints, stars and a final "What you learned"
+      recap. Every turn's Play runs at least 5 animated steps, where messages or objects
+      visibly move between `<Node>`s. The first turn is a guided tutorial (choice
+      pre-selected) so `check:pattern` can step through it.
 - [ ] Every step highlights the matching code line(s), and every caption explains *why*,
       not just *what*.
 - [ ] Code exists in **all 10 languages**: Java, C#, TS (type-enforced) plus Python,
@@ -137,6 +148,7 @@ src/
 ├── components/
 │   ├── layout/              AppLayout (sidebar + mobile drawer), Header, Sidebar
 │   ├── visual/index.tsx     shared visual blocks: Stage, Node, Connector, Packet, StatusDot, Caption
+│   ├── game/                game shell: index.tsx (GameHud, MissionBanner, ChoiceButton, LevelCompleteCard, Recap, NewCodeChip), state.ts (levels, stars, saved progress, shake)
 │   ├── PatternPage.tsx      the 4-section page shell; every pattern renders through it
 │   ├── CodePanel.tsx        highlighted code + running-line highlight + auto-scroll
 │   ├── CodeLangTabs.tsx     the Java | C# | TS | … switch (wraps on mobile)
@@ -286,6 +298,28 @@ Avoid `{{` in code (Python f-strings, Rust `format!`): it looks like a placehold
 2. Add its Shiki grammar in `GRAMMARS` in `src/lib/highlighter.ts`.
 3. Write `code/<lang>.ts` for every built pattern and add it to each `code/index.ts`.
 4. Add a row to the tables above, then run `check:pattern` for every pattern.
+
+### Learn-by-playing games
+
+Both built patterns are 3-level games; copy `factory-method/Visual.tsx` or
+`strategy/Visual.tsx`.
+
+- **Shell** (`@/components/game`): `<GameHud>` (level tabs with stars + ৳ counter),
+  `<MissionBanner>`, `<ChoiceButton>` (radio or checkbox tile that shakes on a wrong
+  answer), `<LevelCompleteCard>`, `<Recap>`, `<NewCodeChip>`. State helpers live in
+  `@/components/game/state`: `useGameProgress(key)` (unlocked levels, stars, ৳; saved
+  in localStorage as `dpp-<id>-game`), `useShake()`, `starsFor(mistakes)`.
+- **Turn loop:** the learner chooses → presses Play (a `useStepPlayer` timeline) → the
+  outcome is *derived* from `player.done` (don't set state in an effect) → a
+  "Next / Try again" button saves the result (৳, mistakes, dots).
+- **Wrong answers** never just say "wrong": the caption explains the concept, and the
+  choice shakes. Each mistake costs a star (0 → ★★★, 1 → ★★☆, 2+ → ★☆☆).
+- **Code panel:** report `onCodeView('without' | 'main' | 'with')` per level, and put
+  `@step` markers for the game in the `without`/`with` snippets of **all** languages.
+  While idle, highlight what the current choice would run.
+- **Level-complete cards:** level 1 teases the next requirement (with a `???` code
+  chip), level 2 summarises what the pattern saved, level 3 shows the recap.
+- All game text lives in `content.visual` / `content.steps` (EN + বাংলা), as usual.
 
 ### Writing `Visual.tsx`
 

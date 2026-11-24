@@ -58,40 +58,40 @@ receipt = checkout.pay(1250)  # @step:client-pay,done
 
 const without = `
 # {{withoutIntro}}
-def checkout(amount: float, method: str) -> Receipt:
-    if method == "bkash":
+def checkout(amount: float, method: str) -> Receipt:  # @step:l1-start
+    if method == "bkash":  # @step:l1-bkash
         fee = amount * 0.0185
-        verify_otp(customer.phone)
-        confirm_pin(customer.phone)
-    elif method == "nagad":
+        verify_otp(customer.phone)  # @step:l1-bkash-otp
+        confirm_pin(customer.phone)  # @step:l1-bkash-pin
+    elif method == "nagad":  # @step:l1-nagad
         fee = amount * 0.01
-        verify_otp(customer.phone)
-    elif method == "card":
+        verify_otp(customer.phone)  # @step:l1-nagad-otp
+    elif method == "card":  # @step:l1-card
         fee = amount * 0.025
-        run_3d_secure(customer.card)
-        authorize_with_bank(customer.card, amount + fee)
+        run_3d_secure(customer.card)  # @step:l1-card-3ds
+        authorize_with_bank(customer.card, amount + fee)  # @step:l1-card-bank
     else:
         raise ValueError("Unknown payment method: " + method)
-    # {{withoutTodo}}
+    # {{withoutTodo}}  # @step:l1-todo
 
-    return Receipt(method, amount, fee, amount + fee)
+    return Receipt(method, amount, fee, amount + fee)  # @step:l1-result
 
 checkout(1250, "bkash")
 `
 
 const withPattern = `
 # {{withAdd}}
-class RocketPayment:
+class RocketPayment:  # @step:build-strategy
     def pay(self, amount: float) -> Receipt:
-        fee = amount * 0.018
-        verify_otp(customer.phone)
-        return Receipt("Rocket", amount, fee, amount + fee)
+        fee = amount * 0.018  # @step:rocket-fee
+        verify_otp(customer.phone)  # @step:rocket-otp
+        return Receipt("Rocket", amount, fee, amount + fee)  # @step:rocket-receipt
 
 checkout = Checkout(BkashPayment())
 checkout.pay(1250)
 
-checkout.set_strategy(RocketPayment())  # {{withSwap}}
-checkout.pay(1250)
+checkout.set_strategy(RocketPayment())  # {{withSwap}}  # @step:build-plug,rocket-set
+checkout.pay(1250)  # @step:rocket-pay,rocket-done
 `
 
 export const python: CodeSet = {

@@ -1,5 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useMemo, useState } from 'react'
+import { ChoiceButton, GameHud, LevelCompleteCard, MissionBanner, NewCodeChip, Recap } from '@/components/game'
+import { type Level, starsFor, useGameProgress, useShake } from '@/components/game/state'
 import { Button } from '@/components/ui/Button'
 import { StepControls } from '@/components/ui/StepControls'
 import { Caption, Connector, Node, Packet, Stage, StatusDot, type Status } from '@/components/visual'
@@ -21,7 +23,6 @@ type Labels = FactoryMethodContent['visual']
 type LabelKey = keyof Labels
 type City = 'dhaka' | 'chattogram' | 'barishal' | 'sylhet'
 type VehicleId = 'van' | 'truck' | 'launch' | 'drone'
-type Level = 1 | 2 | 3
 type Choice = VehicleId | City
 
 /* ------------------------------------------------------------------ */
@@ -130,35 +131,11 @@ const ORDERS: Record<Level, Order[]> = {
   ],
 }
 
-const LEVELS: Level[] = [1, 2, 3]
 const LEVEL_ICON: Record<Level, string> = { 1: '🧑‍💼', 2: '🏢', 3: '🚁' }
 const LEVEL1_VEHICLES: VehicleId[] = ['van', 'truck', 'launch']
 const OLD_CITIES: City[] = ['dhaka', 'chattogram', 'barishal']
 const METHODS = ['sendParcel()', 'createTransport()', 'deliver()'] as const
 const LEVEL1_IF_LINES = 14
-
-/* ------------------------------------------------------------------ */
-/* Saved progress (per viewer; the game works without it)             */
-/* ------------------------------------------------------------------ */
-
-interface Progress {
-  unlocked: Level
-  stars: Partial<Record<Level, number>>
-  coins: number
-}
-const STORAGE_KEY = 'dpp-factory-method-game'
-const FRESH: Progress = { unlocked: 1, stars: {}, coins: 0 }
-
-function loadProgress(): Progress {
-  try {
-    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? 'null') as Partial<Progress> | null
-    if (!saved) return FRESH
-    const unlocked = saved.unlocked === 2 || saved.unlocked === 3 ? saved.unlocked : 1
-    return { unlocked, stars: saved.stars ?? {}, coins: Number(saved.coins) || 0 }
-  } catch {
-    return FRESH
-  }
-}
 
 /* ------------------------------------------------------------------ */
 /* Timeline                                                            */
@@ -204,9 +181,6 @@ function buildSteps(level: Level, order: Order, choice: Choice | null): GameStep
   ]
 }
 
-const SHAKE_A = [0, -7, 7, -4, 4, 0]
-const SHAKE_B = [0, 7, -7, 4, -4, 0]
-const starText = (n: number) => '★'.repeat(n) + '☆'.repeat(3 - n)
 
 /* ------------------------------------------------------------------ */
 /* Visual                                                              */
@@ -217,14 +191,14 @@ export default function FactoryMethodVisual({ content, lang, onCodeStep, onCodeV
   const captions: Record<string, string> = content.steps
   const label = (key: LabelKey) => v[key]
 
-  const [progress, setProgress] = useState<Progress>(loadProgress)
+  const { progress, addCoins, completeLevel, reset: resetProgress } = useGameProgress('dpp-factory-method-game')
+  const shake = useShake()
   const [level, setLevel] = useState<Level>(1)
   const [orderIdx, setOrderIdx] = useState(0)
   const [results, setResults] = useState<('ok' | 'fail')[]>([])
   const [mistakes, setMistakes] = useState(0)
   const [choice, setChoice] = useState<Choice | null>('van') // level 1, order 1 is a guided tutorial
   const [hint, setHint] = useState<{ key: string; values?: Record<string, string> } | null>(null)
-  const [shake, setShake] = useState<{ id: string; n: number }>({ id: '', n: 0 })
   const [sylhetBuilt, setSylhetBuilt] = useState(false)
   const [builder, setBuilder] = useState<'product' | 'method' | 'ready' | null>(null)
   const [levelDone, setLevelDone] = useState(false)
@@ -254,14 +228,6 @@ export default function FactoryMethodVisual({ content, lang, onCodeStep, onCodeV
   const outcome: 'ok' | 'fail' | null = player.done ? (willSucceed ? 'ok' : 'fail') : null
   const pendingCoins = outcome === 'ok' && vehicle ? vehicle.fee : 0
 
-  useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(progress))
-    } catch {
-      // storage unavailable: progress lasts for this visit only
-    }
-  }, [progress])
-
   /* ---------------- code panel sync ---------------- */
 
   const view: CodeView =
@@ -287,8 +253,8 @@ export default function FactoryMethodVisual({ content, lang, onCodeStep, onCodeV
 
   /* ---------------- actions ---------------- */
 
-  const bump = (id: string) => setShake((s) => ({ id, n: s.n + 1 }))
-  const shakeAnim = (id: string) => (shake.id === id ? { x: shake.n % 2 ? SHAKE_A : SHAKE_B } : { x: 0 })
+  const bump = shake.bump
+  const shakeAnim = shake.anim
   const busy = player.index >= 0
 
   const startLevel = (n: Level) => {
@@ -305,7 +271,7 @@ export default function FactoryMethodVisual({ content, lang, onCodeStep, onCodeV
   }
 
   const restartGame = () => {
-    setProgress(FRESH)
+    resetProgress()
     startLevel(1)
   }
 
@@ -373,13 +339,9 @@ export default function FactoryMethodVisual({ content, lang, onCodeStep, onCodeV
   }
 
   const finishLevel = () => {
-    const stars = mistakes === 0 ? 3 : mistakes === 1 ? 2 : 1
+    const stars = starsFor(mistakes)
     setLastStars(stars)
-    setProgress((p) => ({
-      ...p,
-      unlocked: Math.max(p.unlocked, Math.min(level + 1, 3)) as Level,
-      stars: { ...p.stars, [level]: Math.max(p.stars[level] ?? 0, stars) },
-    }))
+    completeLevel(level, stars)
     setLevelDone(true)
     setChoice(null)
   }
@@ -392,7 +354,7 @@ export default function FactoryMethodVisual({ content, lang, onCodeStep, onCodeV
       next[orderIdx] ??= wasOk ? 'ok' : 'fail' // the first attempt counts for the dots
       return next
     })
-    if (wasOk) setProgress((p) => ({ ...p, coins: p.coins + pendingCoins }))
+    if (wasOk) addCoins(pendingCoins)
     player.reset()
     setHint(null)
     setChoice(null)
@@ -461,24 +423,16 @@ export default function FactoryMethodVisual({ content, lang, onCodeStep, onCodeV
     onClick: () => void,
     extra = '',
   ) => (
-    <motion.button
+    <ChoiceButton
       key={id}
-      type="button"
-      role="radio"
-      aria-checked={selected}
+      selected={selected}
+      color={color}
+      icon={icon}
+      text={text}
       onClick={onClick}
       animate={shakeAnim(id)}
-      transition={{ duration: 0.4 }}
-      className={`flex min-w-0 flex-col items-center gap-0.5 rounded-lg border-2 border-edge px-1 py-2 text-xs font-bold transition-[box-shadow,background-color] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chili ${
-        selected ? 'text-white shadow-hard-sm' : 'bg-card text-ink hover:shadow-hard-sm'
-      } ${extra}`}
-      style={selected ? { backgroundColor: color } : undefined}
-    >
-      <span className="text-lg" aria-hidden="true">
-        {icon}
-      </span>
-      <span className="max-w-full truncate">{text}</span>
-    </motion.button>
+      className={extra}
+    />
   )
 
   const orderOf = fill(v.orderOf, {
@@ -489,97 +443,39 @@ export default function FactoryMethodVisual({ content, lang, onCodeStep, onCodeV
   return (
     <div className="flex flex-col gap-4">
       {/* ── HUD: levels + coins ─────────────────────────────── */}
-      <div className="flex flex-wrap items-stretch gap-2">
-        <div role="tablist" aria-label={v.levelsLabel} className="grid min-w-0 flex-1 grid-cols-3 gap-2">
-          {LEVELS.map((n) => {
-            const locked = n > progress.unlocked
-            const selected = n === level
-            const stars = progress.stars[n] ?? 0
-            return (
-              <button
-                key={n}
-                type="button"
-                role="tab"
-                aria-selected={selected}
-                disabled={locked}
-                onClick={() => startLevel(n)}
-                title={label(`level${n}Title` as LabelKey)}
-                className={`flex flex-col items-center rounded-lg border-2 border-edge px-1 py-1.5 text-xs font-bold transition-[transform,box-shadow] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chili ${
-                  selected
-                    ? 'bg-bottle text-cream shadow-hard-sm'
-                    : locked
-                      ? 'cursor-not-allowed bg-paper-deep text-ink-soft/60'
-                      : 'bg-card text-ink hover:-translate-y-0.5 hover:shadow-hard-sm'
-                }`}
-              >
-                <span>{fill(v.levelLabel, { n: formatNumber(n, lang) })}</span>
-                <span aria-label={locked ? v.locked : `${stars}/3`} className="tracking-widest">
-                  {locked ? '🔒' : starText(stars)}
-                </span>
-              </button>
-            )
-          })}
-        </div>
-        <div className="relative flex items-center gap-1 rounded-lg border-2 border-edge bg-mustard px-2.5 text-sm font-bold text-on-accent tabular-nums shadow-hard-sm">
-          <span aria-hidden="true">💰</span>
-          <span className="sr-only">{v.earned}</span>
-          {formatTaka(progress.coins + pendingCoins, lang)}
-          <AnimatePresence>
-            {pendingCoins > 0 && (
-              <motion.span
-                key={`${level}-${orderIdx}`}
-                initial={{ opacity: 1, y: 0 }}
-                animate={{ opacity: 0, y: -28 }}
-                transition={{ duration: 1.4 }}
-                className="pointer-events-none absolute -top-1 right-1 text-xs font-extrabold text-bottle dark:text-jade"
-                aria-hidden="true"
-              >
-                +{formatTaka(pendingCoins, lang)}
-              </motion.span>
-            )}
-          </AnimatePresence>
-        </div>
-      </div>
+      <GameHud
+        level={level}
+        progress={progress}
+        pendingCoins={pendingCoins}
+        gainKey={`${level}-${orderIdx}`}
+        onPickLevel={startLevel}
+        titles={{ 1: v.level1Title, 2: v.level2Title, 3: v.level3Title }}
+        labels={v}
+        lang={lang}
+      />
 
       <Stage>
-        {/* ── Mission ─────────────────────────────────────────── */}
-        <div className="mb-4 flex items-start gap-3">
-          <span
-            aria-hidden="true"
-            className="grid size-10 shrink-0 place-items-center rounded-lg border-2 border-edge bg-maroon text-xl shadow-hard-sm"
-          >
-            {LEVEL_ICON[level]}
-          </span>
-          <div className="min-w-0 flex-1">
-            <p className="label-caps text-chili">{fill(v.levelLabel, { n: formatNumber(level, lang) })}</p>
-            <h3 className="font-display text-lg leading-tight font-bold text-ink">{label(`level${level}Title` as LabelKey)}</h3>
-            <p className="prose-text mt-0.5 text-sm text-ink-soft">{label(`level${level}Goal` as LabelKey)}</p>
-          </div>
-        </div>
+        <MissionBanner
+          icon={LEVEL_ICON[level]}
+          levelText={fill(v.levelLabel, { n: formatNumber(level, lang) })}
+          title={label(`level${level}Title` as LabelKey)}
+          goal={label(`level${level}Goal` as LabelKey)}
+        />
 
         <AnimatePresence mode="wait" initial={false}>
           {levelDone ? (
             /* ── Level complete ─────────────────────────────── */
-            <motion.div
+            <LevelCompleteCard
               key={`done-${level}`}
-              initial={{ opacity: 0, scale: 0.92 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0 }}
-              className="flex flex-col items-center gap-3 rounded-xl border-2 border-edge bg-card p-4 text-center shadow-hard-sm"
+              title={fill(v.levelDone, { n: formatNumber(level, lang) })}
+              stars={lastStars}
+              primary={
+                level < 3
+                  ? { label: `${v.nextLevel} →`, onClick: () => startLevel((level + 1) as Level) }
+                  : { label: v.playAgain, onClick: restartGame }
+              }
+              secondary={{ label: v.replayLevel, onClick: () => startLevel(level) }}
             >
-              <motion.p
-                className="text-4xl"
-                aria-hidden="true"
-                initial={{ rotate: -20, scale: 0.4 }}
-                animate={{ rotate: 0, scale: 1 }}
-                transition={{ type: 'spring', stiffness: 260, damping: 12 }}
-              >
-                🎉
-              </motion.p>
-              <h3 className="font-display text-2xl font-bold text-ink">{fill(v.levelDone, { n: formatNumber(level, lang) })}</h3>
-              <p className="text-3xl tracking-widest text-maroon dark:text-mustard" aria-label={`${lastStars}/3`}>
-                {starText(lastStars)}
-              </p>
               {level === 1 && (
                 <>
                   <p className="prose-text text-sm text-ink">{v.l1Teaser}</p>
@@ -593,31 +489,16 @@ export default function FactoryMethodVisual({ content, lang, onCodeStep, onCodeV
               )}
               {level === 2 && <p className="prose-text text-sm text-ink">{v.l2Summary}</p>}
               {level === 3 && (
-                <div className="w-full text-left">
-                  <p className="mb-1 label-caps text-ink-soft">{v.recapTitle}</p>
-                  <ul className="prose-text flex flex-col gap-1.5 text-sm text-ink">
-                    {[v.recap1, v.recap2, v.recap3].map((r, i) => (
-                      <li key={i} className="flex gap-2">
-                        <span aria-hidden="true">{['😣', '🏭', '🚀'][i]}</span>
-                        <span>{r}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                <Recap
+                  title={v.recapTitle}
+                  items={[
+                    { icon: '😣', text: v.recap1 },
+                    { icon: '🏭', text: v.recap2 },
+                    { icon: '🚀', text: v.recap3 },
+                  ]}
+                />
               )}
-              <div className="flex flex-wrap justify-center gap-2">
-                {level < 3 ? (
-                  <Button variant="primary" onClick={() => startLevel((level + 1) as Level)} data-game="next-level">
-                    {v.nextLevel} →
-                  </Button>
-                ) : (
-                  <Button variant="primary" onClick={restartGame}>
-                    {v.playAgain}
-                  </Button>
-                )}
-                <Button onClick={() => startLevel(level)}>{v.replayLevel}</Button>
-              </div>
-            </motion.div>
+            </LevelCompleteCard>
           ) : (
             <motion.div key={`play-${level}`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
               {/* ── Client: order + choice ─────────────────────── */}
@@ -803,16 +684,7 @@ export default function FactoryMethodVisual({ content, lang, onCodeStep, onCodeV
                             ),
                           )}
                         </div>
-                        {builder !== 'product' && (
-                          <motion.code
-                            lang="en"
-                            initial={{ opacity: 0, y: -6 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="mt-2 block truncate rounded-md bg-code px-2 py-1 font-mono text-xs text-[#7ee2a8]"
-                          >
-                            + class Drone implements Transport
-                          </motion.code>
-                        )}
+                        {builder !== 'product' && <NewCodeChip>+ class Drone implements Transport</NewCodeChip>}
                       </div>
 
                       {builder !== 'product' && (
@@ -849,16 +721,7 @@ export default function FactoryMethodVisual({ content, lang, onCodeStep, onCodeV
                               )
                             })}
                           </div>
-                          {builder === 'ready' && (
-                            <motion.code
-                              lang="en"
-                              initial={{ opacity: 0, y: -6 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              className="mt-2 block truncate rounded-md bg-code px-2 py-1 font-mono text-xs text-[#7ee2a8]"
-                            >
-                              + createTransport() → new Drone()
-                            </motion.code>
-                          )}
+                          {builder === 'ready' && <NewCodeChip>+ createTransport() → new Drone()</NewCodeChip>}
                         </motion.div>
                       )}
 

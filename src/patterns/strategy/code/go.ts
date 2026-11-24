@@ -62,45 +62,45 @@ receipt := checkout.Pay(1250) // @step:client-pay,done
 
 const without = `
 // {{withoutIntro}}
-func checkout(amount float64, method string) (Receipt, error) {
+func checkout(amount float64, method string) (Receipt, error) { // @step:l1-start
     var fee float64
 
     switch method {
-    case "bkash":
+    case "bkash": // @step:l1-bkash
         fee = amount * 0.0185
-        verifyOTP(customer.Phone)
-        confirmPIN(customer.Phone)
-    case "nagad":
+        verifyOTP(customer.Phone) // @step:l1-bkash-otp
+        confirmPIN(customer.Phone) // @step:l1-bkash-pin
+    case "nagad": // @step:l1-nagad
         fee = amount * 0.01
-        verifyOTP(customer.Phone)
-    case "card":
+        verifyOTP(customer.Phone) // @step:l1-nagad-otp
+    case "card": // @step:l1-card
         fee = amount * 0.025
-        run3DSecure(customer.Card)
-        authorizeWithBank(customer.Card, amount+fee)
+        run3DSecure(customer.Card) // @step:l1-card-3ds
+        authorizeWithBank(customer.Card, amount+fee) // @step:l1-card-bank
     default:
         return Receipt{}, errors.New("unknown payment method: " + method)
     }
-    // {{withoutTodo}}
+    // {{withoutTodo}} // @step:l1-todo
 
-    return Receipt{method, amount, fee, amount + fee}, nil
+    return Receipt{method, amount, fee, amount + fee}, nil // @step:l1-result
 }
 `
 
 const withPattern = `
 // {{withAdd}}
-type RocketPayment struct{}
+type RocketPayment struct{} // @step:build-strategy
 
 func (RocketPayment) Pay(amount float64) Receipt {
-    fee := amount * 0.018
-    verifyOTP(customer.Phone)
-    return Receipt{"Rocket", amount, fee, amount + fee}
+    fee := amount * 0.018 // @step:rocket-fee
+    verifyOTP(customer.Phone) // @step:rocket-otp
+    return Receipt{"Rocket", amount, fee, amount + fee} // @step:rocket-receipt
 }
 
 checkout := &Checkout{strategy: BkashPayment{}}
 checkout.Pay(1250)
 
-checkout.SetStrategy(RocketPayment{}) // {{withSwap}}
-checkout.Pay(1250)
+checkout.SetStrategy(RocketPayment{}) // {{withSwap}} // @step:build-plug,rocket-set
+checkout.Pay(1250) // @step:rocket-pay,rocket-done
 `
 
 export const go: CodeSet = {

@@ -63,26 +63,26 @@ const receipt = checkout.pay(1250); // @step:client-pay,done
 
 const without = `
 // {{withoutIntro}}
-function checkout(amount: number, method: string): Receipt {
+function checkout(amount: number, method: string): Receipt { // @step:l1-start
   let fee = 0;
 
-  if (method === 'bkash') {
+  if (method === 'bkash') { // @step:l1-bkash
     fee = amount * 0.0185;
-    verifyOtp(customer.phone);
-    confirmPin(customer.phone);
-  } else if (method === 'nagad') {
+    verifyOtp(customer.phone); // @step:l1-bkash-otp
+    confirmPin(customer.phone); // @step:l1-bkash-pin
+  } else if (method === 'nagad') { // @step:l1-nagad
     fee = amount * 0.01;
-    verifyOtp(customer.phone);
-  } else if (method === 'card') {
+    verifyOtp(customer.phone); // @step:l1-nagad-otp
+  } else if (method === 'card') { // @step:l1-card
     fee = amount * 0.025;
-    run3DSecure(customer.card);
-    authorizeWithBank(customer.card, amount + fee);
+    run3DSecure(customer.card); // @step:l1-card-3ds
+    authorizeWithBank(customer.card, amount + fee); // @step:l1-card-bank
   } else {
     throw new Error('Unknown payment method: ' + method);
   }
-  // {{withoutTodo}}
+  // {{withoutTodo}} // @step:l1-todo
 
-  return { method, amount, fee, total: amount + fee };
+  return { method, amount, fee, total: amount + fee }; // @step:l1-result
 }
 
 checkout(1250, 'bkash');
@@ -90,19 +90,19 @@ checkout(1250, 'bkash');
 
 const withPattern = `
 // {{withAdd}}
-class RocketPayment implements PaymentStrategy {
+class RocketPayment implements PaymentStrategy { // @step:build-strategy
   pay(amount: number): Receipt {
-    const fee = amount * 0.018;
-    verifyOtp(customer.phone);
-    return { method: 'Rocket', amount, fee, total: amount + fee };
+    const fee = amount * 0.018; // @step:rocket-fee
+    verifyOtp(customer.phone); // @step:rocket-otp
+    return { method: 'Rocket', amount, fee, total: amount + fee }; // @step:rocket-receipt
   }
 }
 
 const checkout = new Checkout(new BkashPayment());
 checkout.pay(1250);
 
-checkout.setStrategy(new RocketPayment()); // {{withSwap}}
-checkout.pay(1250);
+checkout.setStrategy(new RocketPayment()); // {{withSwap}} // @step:build-plug,rocket-set
+checkout.pay(1250); // @step:rocket-pay,rocket-done
 `
 
 export const ts: CodeSet = {

@@ -79,29 +79,29 @@ const without = `
 <?php
 
 // {{withoutIntro}}
-function checkout(float $amount, string $method): Receipt
+function checkout(float $amount, string $method): Receipt // @step:l1-start
 {
     switch ($method) {
-        case 'bkash':
+        case 'bkash': // @step:l1-bkash
             $fee = $amount * 0.0185;
-            verifyOtp($customer->phone);
-            confirmPin($customer->phone);
+            verifyOtp($customer->phone); // @step:l1-bkash-otp
+            confirmPin($customer->phone); // @step:l1-bkash-pin
             break;
-        case 'nagad':
+        case 'nagad': // @step:l1-nagad
             $fee = $amount * 0.01;
-            verifyOtp($customer->phone);
+            verifyOtp($customer->phone); // @step:l1-nagad-otp
             break;
-        case 'card':
+        case 'card': // @step:l1-card
             $fee = $amount * 0.025;
-            run3DSecure($customer->card);
-            authorizeWithBank($customer->card, $amount + $fee);
+            run3DSecure($customer->card); // @step:l1-card-3ds
+            authorizeWithBank($customer->card, $amount + $fee); // @step:l1-card-bank
             break;
         default:
             throw new InvalidArgumentException('Unknown payment method: ' . $method);
     }
-    // {{withoutTodo}}
+    // {{withoutTodo}} // @step:l1-todo
 
-    return new Receipt($method, $amount, $fee, $amount + $fee);
+    return new Receipt($method, $amount, $fee, $amount + $fee); // @step:l1-result
 }
 `
 
@@ -109,21 +109,21 @@ const withPattern = `
 <?php
 
 // {{withAdd}}
-class RocketPayment implements PaymentStrategy
+class RocketPayment implements PaymentStrategy // @step:build-strategy
 {
     public function pay(float $amount): Receipt
     {
-        $fee = $amount * 0.018;
-        verifyOtp($customer->phone);
-        return new Receipt('Rocket', $amount, $fee, $amount + $fee);
+        $fee = $amount * 0.018; // @step:rocket-fee
+        verifyOtp($customer->phone); // @step:rocket-otp
+        return new Receipt('Rocket', $amount, $fee, $amount + $fee); // @step:rocket-receipt
     }
 }
 
 $checkout = new Checkout(new BkashPayment());
 $checkout->pay(1250);
 
-$checkout->setStrategy(new RocketPayment()); // {{withSwap}}
-$checkout->pay(1250);
+$checkout->setStrategy(new RocketPayment()); // {{withSwap}} // @step:build-plug,rocket-set
+$checkout->pay(1250); // @step:rocket-pay,rocket-done
 `
 
 export const php: CodeSet = {

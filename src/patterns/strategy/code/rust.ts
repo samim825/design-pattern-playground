@@ -64,47 +64,47 @@ let receipt = checkout.pay(1250.0); // @step:client-pay,done
 
 const without = `
 // {{withoutIntro}}
-fn checkout(amount: f64, method: &'static str) -> Result<Receipt, String> {
+fn checkout(amount: f64, method: &'static str) -> Result<Receipt, String> { // @step:l1-start
     let fee = match method {
-        "bkash" => {
-            verify_otp(&customer.phone);
-            confirm_pin(&customer.phone);
+        "bkash" => { // @step:l1-bkash
+            verify_otp(&customer.phone); // @step:l1-bkash-otp
+            confirm_pin(&customer.phone); // @step:l1-bkash-pin
             amount * 0.0185
         }
-        "nagad" => {
-            verify_otp(&customer.phone);
+        "nagad" => { // @step:l1-nagad
+            verify_otp(&customer.phone); // @step:l1-nagad-otp
             amount * 0.01
         }
-        "card" => {
+        "card" => { // @step:l1-card
             let fee = amount * 0.025;
-            run_3d_secure(&customer.card);
-            authorize_with_bank(&customer.card, amount + fee);
+            run_3d_secure(&customer.card); // @step:l1-card-3ds
+            authorize_with_bank(&customer.card, amount + fee); // @step:l1-card-bank
             fee
         }
         other => return Err(format!("Unknown payment method: {other}")),
     };
-    // {{withoutTodo}}
+    // {{withoutTodo}} // @step:l1-todo
 
-    Ok(Receipt { method, amount, fee, total: amount + fee })
+    Ok(Receipt { method, amount, fee, total: amount + fee }) // @step:l1-result
 }
 `
 
 const withPattern = `
 // {{withAdd}}
-pub struct RocketPayment;
+pub struct RocketPayment; // @step:build-strategy
 impl PaymentStrategy for RocketPayment {
     fn pay(&self, amount: f64) -> Receipt {
-        let fee = amount * 0.018;
-        verify_otp(&customer.phone);
-        Receipt { method: "Rocket", amount, fee, total: amount + fee }
+        let fee = amount * 0.018; // @step:rocket-fee
+        verify_otp(&customer.phone); // @step:rocket-otp
+        Receipt { method: "Rocket", amount, fee, total: amount + fee } // @step:rocket-receipt
     }
 }
 
 let mut checkout = Checkout { strategy: Box::new(BkashPayment) };
 checkout.pay(1250.0);
 
-checkout.set_strategy(Box::new(RocketPayment)); // {{withSwap}}
-checkout.pay(1250.0);
+checkout.set_strategy(Box::new(RocketPayment)); // {{withSwap}} // @step:build-plug,rocket-set
+checkout.pay(1250.0); // @step:rocket-pay,rocket-done
 `
 
 export const rust: CodeSet = {

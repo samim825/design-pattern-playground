@@ -66,45 +66,45 @@ Receipt receipt = checkout.pay(1250); // @step:client-pay,done
 
 const without = `
 // {{withoutIntro}}
-Receipt checkout(double amount, const std::string& method) {
+Receipt checkout(double amount, const std::string& method) { // @step:l1-start
     double fee = 0;
 
-    if (method == "bkash") {
+    if (method == "bkash") { // @step:l1-bkash
         fee = amount * 0.0185;
-        verifyOtp(customer.phone);
-        confirmPin(customer.phone);
-    } else if (method == "nagad") {
+        verifyOtp(customer.phone); // @step:l1-bkash-otp
+        confirmPin(customer.phone); // @step:l1-bkash-pin
+    } else if (method == "nagad") { // @step:l1-nagad
         fee = amount * 0.01;
-        verifyOtp(customer.phone);
-    } else if (method == "card") {
+        verifyOtp(customer.phone); // @step:l1-nagad-otp
+    } else if (method == "card") { // @step:l1-card
         fee = amount * 0.025;
-        run3DSecure(customer.card);
-        authorizeWithBank(customer.card, amount + fee);
+        run3DSecure(customer.card); // @step:l1-card-3ds
+        authorizeWithBank(customer.card, amount + fee); // @step:l1-card-bank
     } else {
         throw std::invalid_argument("Unknown payment method: " + method);
     }
-    // {{withoutTodo}}
+    // {{withoutTodo}} // @step:l1-todo
 
-    return {method, amount, fee, amount + fee};
+    return {method, amount, fee, amount + fee}; // @step:l1-result
 }
 `
 
 const withPattern = `
 // {{withAdd}}
-class RocketPayment : public PaymentStrategy {
+class RocketPayment : public PaymentStrategy { // @step:build-strategy
 public:
     Receipt pay(double amount) override {
-        double fee = amount * 0.018;
-        verifyOtp(customer.phone);
-        return {"Rocket", amount, fee, amount + fee};
+        double fee = amount * 0.018; // @step:rocket-fee
+        verifyOtp(customer.phone); // @step:rocket-otp
+        return {"Rocket", amount, fee, amount + fee}; // @step:rocket-receipt
     }
 };
 
 Checkout checkout(std::make_unique<BkashPayment>());
 checkout.pay(1250);
 
-checkout.setStrategy(std::make_unique<RocketPayment>()); // {{withSwap}}
-checkout.pay(1250);
+checkout.setStrategy(std::make_unique<RocketPayment>()); // {{withSwap}} // @step:build-plug,rocket-set
+checkout.pay(1250); // @step:rocket-pay,rocket-done
 `
 
 export const cpp: CodeSet = {

@@ -61,45 +61,45 @@ let receipt = checkout.pay(1250) // @step:client-pay,done
 
 const without = `
 // {{withoutIntro}}
-func checkout(amount: Double, method: String) throws -> Receipt {
+func checkout(amount: Double, method: String) throws -> Receipt { // @step:l1-start
     let fee: Double
 
     switch method {
-    case "bkash":
+    case "bkash": // @step:l1-bkash
         fee = amount * 0.0185
-        verifyOTP(customer.phone)
-        confirmPIN(customer.phone)
-    case "nagad":
+        verifyOTP(customer.phone) // @step:l1-bkash-otp
+        confirmPIN(customer.phone) // @step:l1-bkash-pin
+    case "nagad": // @step:l1-nagad
         fee = amount * 0.01
-        verifyOTP(customer.phone)
-    case "card":
+        verifyOTP(customer.phone) // @step:l1-nagad-otp
+    case "card": // @step:l1-card
         fee = amount * 0.025
-        run3DSecure(customer.card)
-        authorizeWithBank(customer.card, amount + fee)
+        run3DSecure(customer.card) // @step:l1-card-3ds
+        authorizeWithBank(customer.card, amount + fee) // @step:l1-card-bank
     default:
         throw PaymentError.unknownMethod(method)
     }
-    // {{withoutTodo}}
+    // {{withoutTodo}} // @step:l1-todo
 
-    return Receipt(method: method, amount: amount, fee: fee, total: amount + fee)
+    return Receipt(method: method, amount: amount, fee: fee, total: amount + fee) // @step:l1-result
 }
 `
 
 const withPattern = `
 // {{withAdd}}
-struct RocketPayment: PaymentStrategy {
+struct RocketPayment: PaymentStrategy { // @step:build-strategy
     func pay(_ amount: Double) -> Receipt {
-        let fee = amount * 0.018
-        verifyOTP(customer.phone)
-        return Receipt(method: "Rocket", amount: amount, fee: fee, total: amount + fee)
+        let fee = amount * 0.018 // @step:rocket-fee
+        verifyOTP(customer.phone) // @step:rocket-otp
+        return Receipt(method: "Rocket", amount: amount, fee: fee, total: amount + fee) // @step:rocket-receipt
     }
 }
 
 let checkout = Checkout(strategy: BkashPayment())
 checkout.pay(1250)
 
-checkout.setStrategy(RocketPayment()) // {{withSwap}}
-checkout.pay(1250)
+checkout.setStrategy(RocketPayment()) // {{withSwap}} // @step:build-plug,rocket-set
+checkout.pay(1250) // @step:rocket-pay,rocket-done
 `
 
 export const swift: CodeSet = {
