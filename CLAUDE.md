@@ -10,7 +10,8 @@ reference implementation: when in doubt, copy what it does.
 ## ▶ When the user says "Add <name> pattern"
 
 That short request is the whole brief, and it means **build it end to end now**:
-- Don't ask for approval or show a plan first.
+- Don't ask for approval or show a plan first. (The one thing you *do* wait for is the
+  user's OK before committing, see step 9.)
 - Ask only if the name truly can't be matched to the catalog. "factory" means
   `factory-method`; say which one you picked.
 
@@ -68,14 +69,18 @@ Follow these steps in order.
    - unreadable contrast in dark mode
    - wrapping on 360px wide screens
    - Bangla that looks squeezed
-8. **Commit**, only after everything passes, with a message like:
-   `Add Builder pattern: custom PC build at the computer market` (with the scenario in the
-   title and a short body listing what the visual shows).
-9. **Report back** briefly:
+   - code that isn't highlighted in some language (screenshots for non-default code
+     languages end in `-<lang>`, e.g. `en-full-python.png`)
+8. **Report back** briefly, and **stop there; don't commit yet**:
    - the scenario and the learner's choice
    - what animates
    - the check results
-   - anything you were unsure about, e.g. a Bangla phrasing or a simplification
+   - anything you were unsure about, e.g. a Bangla phrasing, a simplification, or a
+     language where the pattern had to be expressed differently (e.g. Go, Rust)
+   - the commit message you propose
+9. **Commit only after the user confirms** (see [Git & commits](#git--commits)), with a
+   message like `Add Builder pattern: custom PC build at the computer market` (with the
+   scenario in the title and a short body listing what the visual shows).
 
 ### Definition of done (quality bar)
 
@@ -193,38 +198,94 @@ src/patterns/<id>/
 
 ### Code snippet conventions (`code/*.ts`)
 
-- Every pattern ships the same example in **10 languages**, in this tab order:
-  Java, C#, TS, Python, Go, Rust, C++, PHP, Ruby, Swift (`CODE_LANGS` in
-  `src/types/pattern.ts`; Java is the default). Java, C# and TS are `required` (a type
-  error if missing); the other seven are expected for every pattern too, but if one is
-  missing its tab is simply hidden. The choice is saved in localStorage as
-  `dpp-code-lang` and drives the code panel and Without vs With.
-- Write each language **idiomatically**, not as a line-by-line port: Java uses
-  `record`, `@Override`, `switch ->`; C# uses `IInterface` names, PascalCase methods,
-  `=>` members, Allman braces; Python uses `dataclass`/`ABC`/`Protocol` and snake_case;
-  Go and Rust have no inheritance, so use interfaces/function fields (Go) and traits
-  with default methods (Rust); C++ uses `virtual`/`override` and `std::unique_ptr`;
-  Swift uses protocols + extensions. Keep the story and type names the same, so the
-  visual still matches.
-- Python and Ruby use `# {{key}}` and `# @step:x`. PHP snippets must start with
-  `<?php` or they are highlighted as HTML. Swift: never use `\(x)` interpolation
-  (the backslash is eaten by the template string); concatenate instead.
-- Comment text must make sense in every language: e.g. don't say "no new here" in a
-  language without `new` (Factory Method uses a separate `noConcrete` key for those).
-- Every language's `main` must use exactly the same `@step` ids as `ts.ts`.
-- Code is written as template strings. Keep it compact and self-explanatory. Helper
-  calls like `verifyOtp(...)` may stay undeclared.
-- `// {{key}}` is replaced by `content.codeComments[key]` in the current language. **All
-  comments go through placeholders**, never as hard-coded English comments.
-- `// @step:a,b` at the **end** of a line lights that line up while visual step `a` or
-  `b` runs. The marker is stripped before display. Several lines may share a step id.
-- Both can sit on one line: `const fee = amount * 0.01; // {{nagadFee}} // @step:nagad-fee`.
-- Avoid backticks, `${` and backslashes inside the snippets, since the template
-  string ends, interpolates or swallows them. Concatenate (`'…' + x`, `"…" . $x`) or
-  use interpolation that avoids them (Python `f"{x}"`, Ruby `"#{x}"`, Rust `format!("{x}")`).
-- Comment keys are shared: all languages reuse the same `codeComments` keys.
-- To add another language (Kotlin, Dart…): add it to `CODE_LANGS`, add its Shiki grammar
-  in `src/lib/highlighter.ts`, then write `code/<lang>.ts` for every built pattern.
+> Two different "languages": the **UI language** (EN | বাংলা, `dpp-lang`) translates
+> text and code comments; the **code language** (Java | C# | TS | …, `dpp-code-lang`)
+> picks which programming language the snippets are shown in. They are independent.
+
+#### Languages
+
+Every pattern ships the same example in **10 code languages**, in this tab order
+(`CODE_LANGS` in `src/types/pattern.ts`). Java is first and is the default.
+
+| Tab | File | Required? | Filename style | Comment / marker |
+|---|---|---|---|---|
+| Java | `java.ts` | ✅ type error if missing | `Checkout.java` | `//` |
+| C# | `csharp.ts` | ✅ | `Checkout.cs` | `//` |
+| TS | `ts.ts` | ✅ (the reference) | `checkout.ts` | `//` |
+| Python | `python.ts` | expected | `checkout.py` | `#` |
+| Go | `go.ts` | expected | `checkout.go` | `//` |
+| Rust | `rust.ts` | expected | `checkout.rs` | `//` |
+| C++ | `cpp.ts` | expected | `checkout.cpp` | `//` |
+| PHP | `php.ts` | expected | `Checkout.php` | `//` |
+| Ruby | `ruby.ts` | expected | `checkout.rb` | `#` |
+| Swift | `swift.ts` | expected | `Checkout.swift` | `//` |
+
+"Expected" means: write it for every new pattern. If one is missing anyway, the app still
+works and its tab is simply hidden (`check:pattern` prints a note).
+
+The chosen code language drives both the code panel (section 3) and Without vs With
+(section 4). Shiki loads each grammar only when that language is first shown.
+
+#### Markers and comments (same in every language)
+
+- `// {{key}}` (or `# {{key}}` in Python/Ruby) is replaced by `content.codeComments[key]`
+  in the current UI language. **All comments go through placeholders**, never as
+  hard-coded English comments. All code languages share the same keys.
+- `// @step:a,b` (or `# @step:a,b`) at the **end** of a line lights that line up while
+  visual step `a` or `b` runs. The marker is stripped before display. Several lines may
+  share a step id.
+- Both can sit on one line: `fee = amount * 0.01  # {{nagadFee}} # @step:nagad-fee`.
+- Every language's `main` must use **exactly the same `@step` ids** as `ts.ts`. A dev
+  warning (`[code] <id>/<lang>: @step markers differ from TypeScript`) fails `check:pattern`.
+- Comment text must make sense in every language. Don't say "no `new` here" in a
+  language without `new`; add a second key instead (Factory Method has `noNew` for
+  Java/C#/TS/PHP/Ruby and `noConcrete` for Python/Go/Rust/C++/Swift).
+
+#### Writing each language
+
+Write each language **idiomatically**, the way a developer of that language would, not
+as a line-by-line port of the TypeScript. Keep the story, the type names and the values
+(fees, cities, amounts) identical so the visual still matches.
+
+| Language | Style to use |
+|---|---|
+| Java | `record` for data, `interface` / `abstract class`, `@Override`, `switch ->` |
+| C# | `record`, `IInterface` names, PascalCase methods, `=>` members, Allman braces, `decimal` for money |
+| TS | `interface`, `abstract class`, `readonly` |
+| Python | `@dataclass`, `ABC` + `@abstractmethod` or `Protocol`, snake_case, type hints |
+| Go | no classes or inheritance: structs + interfaces; a "subclass hook" becomes a function field. Exported names PascalCase |
+| Rust | traits (default methods for shared logic), `Box<dyn Trait>`, snake_case, `match` |
+| C++ | `virtual` / `override` / `= 0`, `std::unique_ptr` + `std::make_unique`, `std::string` |
+| PHP | starts with `<?php`, `readonly class`, constructor promotion, typed params, `match` |
+| Ruby | duck typing; a base class/module raising `NotImplementedError`, `Data.define`, endless `def x = …` |
+| Swift | `protocol` + `extension` for shared logic, `struct`, `any Protocol` |
+
+- Keep it compact: `main` is 30–60 lines (Allman-brace languages like C# and PHP may run a
+  little longer); `without` and `with` are each under about 30 lines.
+- Helpers like `verifyOtp(...)` may stay undeclared. Name them in that language's style
+  (`verify_otp` in Python/Ruby/Rust, `VerifyOtp` in C#, `verifyOTP` in Go/Swift).
+- Indent with **spaces**, never tabs (tabs render 8 wide in the panel), including Go.
+- When a language can't express the pattern the classic way (Go and Rust have no
+  inheritance), show the natural alternative and add a one-line note at the top of that
+  file (a normal TS comment outside the snippet) explaining why.
+
+#### Template-string gotchas
+
+Snippets are JavaScript template strings, so inside them:
+- no backticks (they end the string),
+- no `${` (it interpolates),
+- no backslashes (`\(x)` in Swift, `\n` anywhere): the backslash is swallowed.
+
+Concatenate instead (`'…' + x`, `"…" . $x`), or use interpolation without those
+characters: Python `f"{x}"`, Ruby `"#{x}"`, Rust `format!("{x}")`. Never C# `$"{x}"`.
+Avoid `{{` in code (Python f-strings, Rust `format!`): it looks like a placeholder.
+
+#### Adding another code language (Kotlin, Dart…)
+
+1. Add it to `CODE_LANGS` in `src/types/pattern.ts` (choose `required` and tab position).
+2. Add its Shiki grammar in `GRAMMARS` in `src/lib/highlighter.ts`.
+3. Write `code/<lang>.ts` for every built pattern and add it to each `code/index.ts`.
+4. Add a row to the tables above, then run `check:pattern` for every pattern.
 
 ### Writing `Visual.tsx`
 
@@ -340,4 +401,14 @@ for the requested pattern unless the user specifies otherwise.
   properties. (Code *strings* shown to learners may use them.)
 - Don't change shared components in a way that changes Strategy's look or behavior
   without re-running `npm run check:pattern -- strategy`.
-- Commit after each working step. Never commit a failing `build`, `lint` or `check:pattern`.
+
+## Git & commits
+
+- **Never commit without the user's confirmation.** After any implementation (a new
+  pattern, a fix, a refactor, a docs change), show what changed, propose a commit
+  message, and wait for the user to say so before running `git commit`. Approval for
+  one commit does not carry over to the next.
+- **No AI co-author or attribution.** Don't add `Co-Authored-By: Claude …`,
+  "Generated with Claude Code" or similar lines to commit messages or PR descriptions.
+- Never commit a failing `build`, `lint` or `check:pattern`.
+- Keep one logical change per commit; never push unless asked.
