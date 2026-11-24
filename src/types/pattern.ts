@@ -47,14 +47,15 @@ export interface PatternContent {
 }
 
 /**
- * Programming languages the example code is shown in. Every pattern must provide
+ * Programming languages the example code is shown in, in tab order (the first is the
+ * default). Every pattern must provide
  * a CodeSet for each of these. To add a language: add it here, add its Shiki
  * grammar in lib/highlighter.ts, then write code/<id>.ts for every pattern.
  */
 export const CODE_LANGS = [
-  { id: 'ts', label: 'TypeScript', short: 'TS' },
   { id: 'java', label: 'Java', short: 'Java' },
   { id: 'csharp', label: 'C#', short: 'C#' },
+  { id: 'ts', label: 'TypeScript', short: 'TS' },
 ] as const
 export type CodeLang = (typeof CODE_LANGS)[number]['id']
 

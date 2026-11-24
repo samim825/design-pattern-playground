@@ -6,9 +6,9 @@ export const CODE_LANG_STORAGE_KEY = 'dpp-code-lang'
 function readSaved(): CodeLang {
   try {
     const saved = localStorage.getItem(CODE_LANG_STORAGE_KEY)
-    return CODE_LANGS.find((l) => l.id === saved)?.id ?? 'ts'
+    return CODE_LANGS.find((l) => l.id === saved)?.id ?? CODE_LANGS[0].id
   } catch {
-    return 'ts'
+    return CODE_LANGS[0].id
   }
 }
 

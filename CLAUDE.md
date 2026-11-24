@@ -133,7 +133,7 @@ src/
 │   ├── visual/index.tsx     shared visual blocks: Stage, Node, Connector, Packet, StatusDot, Caption
 │   ├── PatternPage.tsx      the 4-section page shell; every pattern renders through it
 │   ├── CodePanel.tsx        highlighted code + running-line highlight + auto-scroll
-│   ├── CodeLangTabs.tsx     the TS | Java | C# switch
+│   ├── CodeLangTabs.tsx     the Java | C# | TS switch
 │   ├── ComparePanel.tsx     Without vs With
 │   ├── LanguageToggle.tsx, ThemeToggle.tsx, ErrorBoundary.tsx
 │   └── ui/                  Button, Section/Card/BarCard, StepControls, icons
@@ -155,7 +155,7 @@ them from the pattern's data, so a pattern can't skip or reorder them:
 2. **Interactive visualization**: `Visual.tsx`. The learner chooses something, presses
    Play or Step, and watches objects and messages animate, with a "What's happening"
    caption for each step.
-3. **Code panel**: `main`, with a `TS | Java | C#` switch above it. The line that is
+3. **Code panel**: `main`, with a `Java | C# | TS` switch above it. The line that is
    currently "running" is highlighted in sync with the visualization, in every language.
 4. **Without vs With**: `without` (the messy version) next to `with` (the pattern
    version) in the chosen language, followed by bullet points, "Why it's better" and
@@ -194,7 +194,7 @@ src/patterns/<id>/
 ### Code snippet conventions (`code/*.ts`)
 
 - Every pattern ships the same example in **TypeScript, Java and C#** (`CODE_LANGS` in
-  `src/types/pattern.ts`). The learner picks one with the `TS | Java | C#` switch
+  `src/types/pattern.ts`). The learner picks one with the `Java | C# | TS` switch
   (saved in localStorage as `dpp-code-lang`); it drives the code panel and Without vs With.
 - Write each language **idiomatically**, not as a line-by-line port: Java uses
   `record`, `@Override`, `switch ->`; C# uses `IInterface` names, PascalCase methods,

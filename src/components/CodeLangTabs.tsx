@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { setCodeLang, useCodeLang } from '@/hooks/useCodeLang'
 import { CODE_LANGS } from '@/types/pattern'
 
-/** TS | Java | C# switch. Every code panel on the page follows the same choice. */
+/** Java | C# | TS switch. Every code panel on the page follows the same choice. */
 export function CodeLangTabs({ className = '' }: { className?: string }) {
   const { t } = useTranslation()
   const current = useCodeLang()
