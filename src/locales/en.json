@@ -1,0 +1,96 @@
+{
+  "app": {
+    "name": "Design Pattern Playground",
+    "shortName": "DP Playground",
+    "tagline": "Learn by playing"
+  },
+  "nav": {
+    "home": "Home",
+    "patterns": "Patterns",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "soon": "Soon",
+    "progress": "{{built}} of {{total}} patterns ready"
+  },
+  "category": {
+    "creational": "Creational",
+    "structural": "Structural",
+    "behavioral": "Behavioral"
+  },
+  "categoryInfo": {
+    "creational": "How objects get created — hiding “new” behind flexible creation logic.",
+    "structural": "How objects and classes fit together into bigger structures.",
+    "behavioral": "How objects talk to each other and share responsibilities."
+  },
+  "theme": {
+    "toLight": "Switch to light mode",
+    "toDark": "Switch to dark mode"
+  },
+  "language": {
+    "label": "Language"
+  },
+  "home": {
+    "eyebrow": "Interactive · Bilingual · Visual",
+    "title": "Learn design patterns by playing with them",
+    "subtitle": "Every pattern is a small real-world story you can click, run and watch — with the code lighting up line by line as it runs.",
+    "cta": "Start with {{name}}",
+    "what": {
+      "title": "What are design patterns?",
+      "body": [
+        "A design pattern is a proven, reusable solution to a problem that keeps showing up in software design. It isn't a library you install — it's a shape for your code that experienced developers have named and refined over decades.",
+        "The classic catalogue from the “Gang of Four” book groups 23 patterns into three families. Knowing them gives your team a shared vocabulary: say “let's use a Strategy here” and everyone instantly pictures the design."
+      ]
+    },
+    "families": "The three families",
+    "how": {
+      "title": "How each pattern page works",
+      "steps": [
+        { "title": "Read the story", "body": "A relatable, real-world problem — the kind you meet at work." },
+        { "title": "Play with it", "body": "Click, choose and run. Watch objects and messages move around." },
+        { "title": "Follow the code", "body": "The line that is “running” lights up in sync with the animation." },
+        { "title": "Compare before & after", "body": "The messy version next to the clean one — and why it matters." }
+      ]
+    },
+    "tip": "Tip: switch to বাংলা from the header any time. Code stays in English; only the comments are translated.",
+    "available": "Available now",
+    "comingCount": "{{formatted}} more patterns are on the way."
+  },
+  "pattern": {
+    "sections": {
+      "scenario": "Real-world scenario",
+      "visual": "Interactive visualization",
+      "code": "Code",
+      "compare": "Without vs With"
+    },
+    "intent": "In one sentence",
+    "problem": "The problem",
+    "without": "Without the pattern",
+    "with": "With the pattern",
+    "benefit": "Why it's better",
+    "whenToUse": "When to reach for it",
+    "runningLine": "Running line {{line}}",
+    "loadingVisual": "Loading visualization…"
+  },
+  "player": {
+    "play": "Play",
+    "pause": "Pause",
+    "replay": "Replay",
+    "step": "Step",
+    "reset": "Reset",
+    "speed": "Speed"
+  },
+  "code": {
+    "copy": "Copy code",
+    "copied": "Copied!"
+  },
+  "comingSoon": {
+    "title": "{{name}} is coming soon",
+    "body": "This pattern hasn't been built yet. In the meantime, try one that's ready:",
+    "back": "Back to home"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "body": "We couldn't find that page.",
+    "back": "Back to home"
+  }
+}
