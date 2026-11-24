@@ -23,20 +23,20 @@ function ComingSoon({ name, icon }: { name: string; icon: string }) {
       <p className="text-6xl grayscale" aria-hidden="true">
         {icon}
       </p>
-      <h1 className="mt-4 text-2xl font-bold text-slate-900 dark:text-white">{t('comingSoon.title', { name })}</h1>
-      <p className="prose-text mt-2 text-slate-600 dark:text-slate-400">{t('comingSoon.body')}</p>
+      <h1 className="mt-4 text-2xl font-bold text-ink font-display">{t('comingSoon.title', { name })}</h1>
+      <p className="prose-text mt-2 text-ink-soft">{t('comingSoon.body')}</p>
       <div className="mt-6 flex flex-wrap justify-center gap-2">
         {patterns.map((p) => (
           <Link
             key={p.id}
             to={`/patterns/${p.id}`}
-            className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium hover:border-indigo-400 dark:border-slate-700 dark:bg-slate-900"
+            className="rounded-lg border-2 border-edge bg-card px-3 py-1.5 text-sm font-bold shadow-hard-sm hover:bg-mustard hover:text-on-accent"
           >
             {p.icon} {p.content.en.title}
           </Link>
         ))}
       </div>
-      <Link to="/" className="mt-8 inline-block font-medium text-indigo-600 hover:underline dark:text-indigo-400">
+      <Link to="/" className="mt-8 inline-block font-medium text-chili hover:underline">
         ← {t('comingSoon.back')}
       </Link>
     </div>

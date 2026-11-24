@@ -11,7 +11,11 @@ export function LanguageToggle() {
   const { t, i18n } = useTranslation()
   const lang = useLang()
   return (
-    <div role="group" aria-label={t('language.label')} className="flex rounded-lg bg-slate-100 p-0.5 dark:bg-slate-800">
+    <div
+      role="group"
+      aria-label={t('language.label')}
+      className="flex rounded-lg border-2 border-[#2b1d16] bg-[#fdf3dc] p-0.5 shadow-[2px_2px_0_0_#2b1d16]"
+    >
       {OPTIONS.map((o) => (
         <button
           key={o.lang}
@@ -19,12 +23,8 @@ export function LanguageToggle() {
           lang={o.lang}
           aria-pressed={lang === o.lang}
           onClick={() => void i18n.changeLanguage(o.lang)}
-          className={`rounded-md px-2.5 py-1 text-sm font-medium transition-colors ${
-            o.lang === 'bn' ? 'font-bangla' : ''
-          } ${
-            lang === o.lang
-              ? 'bg-white text-indigo-700 shadow-sm dark:bg-slate-600 dark:text-white'
-              : 'text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200'
+          className={`rounded-md px-2.5 py-0.5 text-sm font-bold transition-colors ${
+            lang === o.lang ? 'bg-[#e0393e] text-[#fdf3dc]' : 'text-[#6d5747] hover:text-[#2b1d16]'
           }`}
         >
           {o.label}

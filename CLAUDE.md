@@ -12,8 +12,8 @@ npm run build    # tsc -b (typecheck) + vite build — must pass before committi
 npm run lint     # oxlint — must pass before committing
 ```
 
-Stack: React 19 + TypeScript 7 + Vite 8, Tailwind CSS v4 (class-based dark mode, no
-config file, see `src/index.css`), Framer Motion, react-i18next, Shiki (lazy-loaded),
+Stack: React 19 + TypeScript 7 + Vite 8, Tailwind CSS v4 (class-based dark mode, theme
+tokens in `src/index.css`, no config file), Framer Motion, react-i18next, Shiki (lazy-loaded),
 React Router. Path alias `@/` → `src/`.
 
 ## Folder structure
@@ -128,6 +128,7 @@ values are filled in with the `{{name}}` placeholders (see `strategy/Visual.tsx`
    - Make it interactive: the user chooses something and then runs it.
    - Animate with Framer Motion.
    - Use `<StepControls>` and a "What's happening" caption.
+   - Style it with the theme tokens (see Theme below).
    - Must fit at 360px width with no horizontal scroll, and work in dark mode.
 7. Register it in `src/patterns/registry.ts`: one import plus one entry in `patterns`.
    It then shows up as a link in the sidebar and on the home page.
@@ -138,11 +139,30 @@ values are filled in with the `{{name}}` placeholders (see `strategy/Visual.tsx`
    - The highlighted line matches every visual step.
 9. Commit with a clear message (e.g. `Add Observer pattern: ...`).
 
+## Theme (Bangladeshi folk / rickshaw-art)
+
+- Cream "paper" background with a printed motif (`.bg-motif`), bottle-green header with a
+  chili-red rule, a `rickshaw-strip` tassel border, and maroon hero cards.
+- Cards have thick outlines plus a hard offset shadow: `rounded-xl border-2 border-edge
+  bg-card shadow-hard`. Use `<Card>` or `<BarCard label tone>` from `components/ui/Section`.
+- Section labels use `label-caps`, tracked uppercase. In বাংলা mode the tracking is
+  automatically removed so conjuncts don't split.
+- Fonts: `font-display` (Baloo Da 2) for headings, Hind Siliguri for body text,
+  `font-mono` (JetBrains Mono) for code.
+- **Use semantic color tokens, not the Tailwind palette** (`slate-`, `indigo-`…).
+  - Tokens: `paper`, `paper-deep`, `card`, `ink`, `ink-soft`, `edge`, `shade`, `bottle`,
+    `maroon`, `mustard`, `chili`, `jade`, `cream`, `code`, `on-accent`.
+  - They are CSS variables in `src/index.css` that swap values for dark mode, so
+    components rarely need `dark:` variants.
+  - Text on mustard uses `text-on-accent`. Text on bottle/maroon/chili uses `text-cream`.
+- Code panels are always dark (`bg-code`, Shiki dark colors) in both themes.
+- Brand colors that must stay fixed (e.g. bKash pink) may be hard-coded hex values.
+
 ## Conventions
 
 - Shared UI strings go in `src/locales/*.json`. Pattern-specific text goes in the
   pattern's `content.*.ts`, never in the JSON files.
-- Tailwind only, no CSS files per component. Every color needs a `dark:` counterpart.
+- Tailwind only, no CSS files per component. Check every screen in both light and dark mode.
 - Respect reduced motion: the app is wrapped in `<MotionConfig reducedMotion="user">`.
 - Keep pattern code self-contained in its folder. If a helper is useful to several
   patterns, move it to `components/ui`, `hooks` or `lib`.

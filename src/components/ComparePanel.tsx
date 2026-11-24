@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next'
 import type { PreparedCode } from '@/lib/code'
 import type { CodeSnippet, PatternContent } from '@/types/pattern'
 import { CodePanel } from './CodePanel'
-import { Card } from './ui/Section'
+import { BarCard } from './ui/Section'
 import { CheckIcon, CrossIcon } from './ui/icons'
 
 /** Section 4: messy version vs pattern version, side by side (stacked on small screens). */
@@ -23,30 +23,25 @@ export function ComparePanel({
   ]
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+    <div className="flex flex-col gap-8">
+      <div className="grid grid-cols-1 gap-8 xl:grid-cols-2 xl:gap-6">
         {columns.map((col) => (
           <div key={col.key} className="flex min-w-0 flex-col gap-3">
             <div>
               <span
-                className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ${
-                  col.tone === 'bad'
-                    ? 'bg-rose-100 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300'
-                    : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'
+                className={`inline-flex items-center gap-1 rounded-md border-2 border-edge px-2 py-0.5 label-caps shadow-hard-sm ${
+                  col.tone === 'bad' ? 'bg-chili text-cream' : 'bg-bottle text-cream'
                 }`}
               >
                 {col.tone === 'bad' ? <CrossIcon /> : <CheckIcon />} {col.label}
               </span>
-              <h3 className="mt-2 font-semibold text-slate-900 dark:text-white">{col.data.title}</h3>
+              <h3 className="mt-2 font-display text-lg font-bold text-ink">{col.data.title}</h3>
             </div>
             <CodePanel prepared={col.code.prepared} filename={col.code.snippet.filename} tone={col.tone} maxHeight="26rem" />
             <ul className="prose-text flex flex-col gap-1.5 text-sm">
               {col.data.points.map((p, i) => (
                 <li key={i} className="flex gap-2">
-                  <span
-                    className={`mt-1 shrink-0 ${col.tone === 'bad' ? 'text-rose-500' : 'text-emerald-500'}`}
-                    aria-hidden="true"
-                  >
+                  <span className={`mt-1 shrink-0 ${col.tone === 'bad' ? 'text-chili' : 'text-jade'}`} aria-hidden="true">
                     {col.tone === 'bad' ? <CrossIcon /> : <CheckIcon />}
                   </span>
                   <span>{p}</span>
@@ -57,19 +52,17 @@ export function ComparePanel({
         ))}
       </div>
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <Card className="border-emerald-200 bg-emerald-50/60 p-5 dark:border-emerald-500/30 dark:bg-emerald-500/10">
-          <h3 className="mb-2 font-semibold text-emerald-800 dark:text-emerald-300">💡 {t('pattern.benefit')}</h3>
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <BarCard label={t('pattern.benefit')} icon="💡" tone="bottle">
           <p className="prose-text text-sm">{compare.benefit}</p>
-        </Card>
-        <Card className="p-5">
-          <h3 className="mb-2 font-semibold text-slate-900 dark:text-white">🧭 {t('pattern.whenToUse')}</h3>
-          <ul className="prose-text flex list-disc flex-col gap-1 pl-5 text-sm marker:text-indigo-400">
+        </BarCard>
+        <BarCard label={t('pattern.whenToUse')} icon="🧭" tone="mustard">
+          <ul className="prose-text flex list-disc flex-col gap-1 pl-5 text-sm marker:text-chili">
             {compare.whenToUse.map((w, i) => (
               <li key={i}>{w}</li>
             ))}
           </ul>
-        </Card>
+        </BarCard>
       </div>
     </div>
   )

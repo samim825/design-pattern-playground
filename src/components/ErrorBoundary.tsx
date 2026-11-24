@@ -23,8 +23,8 @@ export class ErrorBoundary extends Component<{ children: ReactNode }, State> {
           <p className="text-5xl" aria-hidden="true">
             💥
           </p>
-          <h1 className="mt-4 text-xl font-bold text-slate-900 dark:text-white">Something went wrong</h1>
-          <pre className="mt-3 overflow-auto rounded-lg bg-rose-50 p-3 text-left text-xs text-rose-800 dark:bg-rose-500/10 dark:text-rose-300">
+          <h1 className="mt-4 text-xl font-bold text-ink font-display">Something went wrong</h1>
+          <pre className="mt-3 overflow-auto rounded-lg border-2 border-edge bg-card p-3 text-left text-xs text-chili">
             {this.state.error.message}
           </pre>
         </div>

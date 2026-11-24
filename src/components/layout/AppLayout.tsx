@@ -27,16 +27,16 @@ export function AppLayout() {
   }, [drawerOpen])
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-paper">
       <Header onOpenMenu={() => setDrawerOpen(true)} />
 
       <div className="flex">
         {/* Desktop sidebar */}
-        <aside className="sticky top-14 hidden h-[calc(100vh-3.5rem)] w-72 shrink-0 overflow-y-auto border-r border-slate-200 lg:block dark:border-slate-800">
+        <aside className="sticky top-[70px] hidden h-[calc(100vh-70px)] w-76 shrink-0 overflow-y-auto border-r-2 border-edge bg-paper-deep lg:block">
           <Sidebar />
         </aside>
 
-        <main className="min-w-0 flex-1">
+        <main className="bg-motif min-h-[calc(100vh-70px)] min-w-0 flex-1">
           <ErrorBoundary key={pathname}>
             <Outlet />
           </ErrorBoundary>
@@ -48,7 +48,7 @@ export function AppLayout() {
         {drawerOpen && (
           <div className="fixed inset-0 z-40 lg:hidden">
             <motion.div
-              className="absolute inset-0 bg-slate-950/50 backdrop-blur-sm"
+              className="absolute inset-0 bg-[#2b1d16]/60"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -58,20 +58,20 @@ export function AppLayout() {
               role="dialog"
               aria-modal="true"
               aria-label={t('nav.patterns')}
-              className="absolute inset-y-0 left-0 flex w-[min(20rem,85vw)] flex-col bg-white shadow-xl dark:bg-slate-900"
+              className="absolute inset-y-0 left-0 flex w-[min(20rem,85vw)] flex-col border-r-2 border-edge bg-paper-deep"
               initial={{ x: '-100%' }}
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', damping: 30, stiffness: 300 }}
             >
-              <div className="flex h-14 shrink-0 items-center justify-between border-b border-slate-200 px-4 dark:border-slate-800">
-                <span className="font-semibold text-slate-900 dark:text-white">{t('nav.patterns')}</span>
+              <div className="flex h-14 shrink-0 items-center justify-between border-b-4 border-chili bg-bottle px-4 text-cream">
+                <span className="font-display text-lg font-bold">{t('nav.patterns')}</span>
                 <button
                   type="button"
                   onClick={close}
                   aria-label={t('nav.closeMenu')}
                   autoFocus
-                  className="grid size-9 place-items-center rounded-lg text-xl text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+                  className="grid size-9 place-items-center rounded-lg text-xl hover:bg-cream/10"
                 >
                   <CloseIcon />
                 </button>

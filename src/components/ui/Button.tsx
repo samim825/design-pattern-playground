@@ -2,12 +2,14 @@ import type { ButtonHTMLAttributes } from 'react'
 
 type Variant = 'primary' | 'secondary' | 'ghost'
 
+// "Printed sticker" buttons: thick outline + hard shadow that presses in on click.
+const pressable =
+  'border-2 border-edge shadow-hard-sm active:translate-x-0.5 active:translate-y-0.5 active:shadow-none disabled:translate-0 disabled:shadow-none'
+
 const variants: Record<Variant, string> = {
-  primary:
-    'bg-indigo-600 text-white shadow-sm hover:bg-indigo-500 disabled:bg-indigo-600/50 dark:bg-indigo-500 dark:hover:bg-indigo-400',
-  secondary:
-    'border border-slate-300 bg-white text-slate-700 hover:bg-slate-100 disabled:opacity-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800',
-  ghost: 'text-slate-600 hover:bg-slate-200/70 dark:text-slate-300 dark:hover:bg-slate-800',
+  primary: `${pressable} bg-mustard text-on-accent hover:brightness-105 disabled:opacity-50`,
+  secondary: `${pressable} bg-card text-ink hover:bg-paper disabled:opacity-50`,
+  ghost: 'border-2 border-transparent text-ink-soft hover:text-ink hover:bg-ink/5 disabled:opacity-40',
 }
 
 export function Button({
@@ -18,7 +20,7 @@ export function Button({
   return (
     <button
       type="button"
-      className={`inline-flex items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 disabled:cursor-not-allowed ${variants[variant]} ${className}`}
+      className={`inline-flex items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-bold transition-[transform,box-shadow,background-color,filter] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chili disabled:cursor-not-allowed ${variants[variant]} ${className}`}
       {...props}
     />
   )

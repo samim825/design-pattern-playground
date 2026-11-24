@@ -39,24 +39,22 @@ export function StepControls({
       </Button>
 
       <div className="ml-auto flex items-center gap-2">
-        <div role="group" aria-label={t('player.speed')} className="flex rounded-lg bg-slate-100 p-0.5 dark:bg-slate-800">
+        <div role="group" aria-label={t('player.speed')} className="flex rounded-lg border-2 border-edge bg-card p-0.5">
           {SPEEDS.map((s) => (
             <button
               key={s}
               type="button"
               aria-pressed={player.speed === s}
               onClick={() => player.setSpeed(s)}
-              className={`rounded-md px-2 py-1 text-xs font-medium transition-colors ${
-                player.speed === s
-                  ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-600 dark:text-white'
-                  : 'text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200'
+              className={`rounded-md px-2 py-0.5 text-xs font-bold transition-colors ${
+                player.speed === s ? 'bg-bottle text-cream' : 'text-ink-soft hover:text-ink'
               }`}
             >
               {formatNumber(s, lang)}×
             </button>
           ))}
         </div>
-        <span className="hidden text-xs tabular-nums text-slate-500 sm:inline dark:text-slate-400">
+        <span className="hidden font-mono text-xs font-bold tabular-nums text-ink-soft sm:inline">
           {formatNumber(Math.max(index + 1, 0), lang)}/{formatNumber(total, lang)}
         </span>
       </div>

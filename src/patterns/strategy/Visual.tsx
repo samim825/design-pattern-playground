@@ -140,13 +140,13 @@ export default function StrategyVisual({ content, lang, onCodeStep }: VisualProp
       💸 {formatTaka(AMOUNT, lang)}
     </Packet>
   )
-  const receiptPacket = <Packet color="#059669">🧾 Receipt</Packet>
+  const receiptPacket = <Packet color="#0b6b4f">🧾 Receipt</Packet>
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm sm:p-5 dark:border-slate-800 dark:bg-slate-900">
+      <div className="rounded-xl border-2 border-edge bg-paper-deep p-3 shadow-hard sm:p-5">
         {/* ── Client ─────────────────────────────────────────── */}
-        <Node role={v.clientRole} title={`🛒 ${v.clientTitle}`} active={kind === 'client-pay' || kind === 'done'} accent="#6366f1">
+        <Node role={v.clientRole} title={`🛒 ${v.clientTitle}`} active={kind === 'client-pay' || kind === 'done'} accent="#0b6b4f">
           <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)]">
             <ul className="flex flex-col gap-1 text-sm">
               {CART.map((item) => (
@@ -157,14 +157,14 @@ export default function StrategyVisual({ content, lang, onCodeStep }: VisualProp
                   <span className="tabular-nums">{formatTaka(item.price, lang)}</span>
                 </li>
               ))}
-              <li className="mt-1 flex justify-between gap-2 border-t border-dashed border-slate-300 pt-1 font-semibold dark:border-slate-700">
+              <li className="mt-1 flex justify-between gap-2 border-t-2 border-dashed border-edge/40 pt-1 font-bold">
                 <span>{v.total}</span>
                 <span className="tabular-nums">{formatTaka(AMOUNT, lang)}</span>
               </li>
             </ul>
 
             <div>
-              <p id="strategy-method-label" className="mb-1.5 text-xs font-medium text-slate-500 dark:text-slate-400">
+              <p id="strategy-method-label" className="mb-1.5 label-caps text-ink-soft">
                 {v.chooseMethod}
               </p>
               <div role="radiogroup" aria-labelledby="strategy-method-label" className="grid grid-cols-3 gap-2">
@@ -177,12 +177,12 @@ export default function StrategyVisual({ content, lang, onCodeStep }: VisualProp
                       role="radio"
                       aria-checked={selected}
                       onClick={() => selectMethod(m.id)}
-                      className={`flex flex-col items-center gap-0.5 rounded-xl border-2 px-1 py-2 text-sm font-semibold transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 ${
+                      className={`flex flex-col items-center gap-0.5 rounded-lg border-2 border-edge px-1 py-2 text-sm font-bold transition-[transform,box-shadow,background-color] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chili ${
                         selected
-                          ? 'text-white shadow-md'
-                          : 'border-slate-200 bg-slate-50 text-slate-700 hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-slate-600'
+                          ? '-translate-y-0.5 text-white shadow-hard-sm'
+                          : 'bg-card text-ink hover:-translate-y-0.5 hover:shadow-hard-sm'
                       }`}
-                      style={selected ? { backgroundColor: m.color, borderColor: m.color } : undefined}
+                      style={selected ? { backgroundColor: m.color } : undefined}
                     >
                       <span className="text-lg" aria-hidden="true">
                         {m.icon}
@@ -201,23 +201,23 @@ export default function StrategyVisual({ content, lang, onCodeStep }: VisualProp
                 initial={{ opacity: 0, y: 12, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0 }}
-                className="mt-3 rounded-lg border border-emerald-300 bg-emerald-50 p-3 text-sm dark:border-emerald-500/40 dark:bg-emerald-500/10"
+                className="mt-3 rounded-lg border-2 border-dashed border-edge bg-paper p-3 text-sm"
               >
-                <div className="mb-1 flex items-center justify-between font-semibold text-emerald-800 dark:text-emerald-300">
+                <div className="mb-1 flex items-center justify-between font-display font-bold text-ink">
                   <span>🧾 {v.receiptTitle}</span>
-                  <span className="rounded-full bg-emerald-600 px-2 py-0.5 text-xs text-white">✓ {v.paid}</span>
+                  <span className="rotate-[-6deg] rounded border-2 border-bottle px-2 py-0.5 label-caps text-bottle">✓ {v.paid}</span>
                 </div>
                 <dl className="grid grid-cols-3 gap-2 tabular-nums">
                   <div>
-                    <dt className="text-xs text-slate-500 dark:text-slate-400">{v.amount}</dt>
+                    <dt className="label-caps text-ink-soft">{v.amount}</dt>
                     <dd>{formatTaka(AMOUNT, lang)}</dd>
                   </div>
                   <div>
-                    <dt className="text-xs text-slate-500 dark:text-slate-400">{v.fee}</dt>
+                    <dt className="label-caps text-ink-soft">{v.fee}</dt>
                     <dd>{formatTaka(fee, lang)}</dd>
                   </div>
                   <div>
-                    <dt className="text-xs text-slate-500 dark:text-slate-400">{v.total}</dt>
+                    <dt className="label-caps text-ink-soft">{v.total}</dt>
                     <dd className="font-bold">{formatTaka(total, lang)}</dd>
                   </div>
                 </dl>
@@ -236,10 +236,10 @@ export default function StrategyVisual({ content, lang, onCodeStep }: VisualProp
         />
 
         {/* ── Context: Checkout ──────────────────────────────── */}
-        <Node role={v.contextRole} title={v.contextTitle} active={kind === 'delegate'} accent="#6366f1" mono>
+        <Node role={v.contextRole} title={v.contextTitle} active={kind === 'delegate'} accent="#0b6b4f" mono>
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-            <div className="flex items-center gap-2 rounded-lg border-2 border-dashed border-slate-300 bg-slate-50 py-1.5 pr-1.5 pl-3 dark:border-slate-600 dark:bg-slate-800/60">
-              <code lang="en" className="font-mono text-xs text-slate-500 dark:text-slate-400">
+            <div className="flex items-center gap-2 rounded-lg border-2 border-dashed border-edge/50 bg-paper py-1.5 pr-1.5 pl-3">
+              <code lang="en" className="font-mono text-xs font-bold text-ink-soft">
                 strategy:
               </code>
               <div className="relative h-8 min-w-36 overflow-hidden">
@@ -251,7 +251,7 @@ export default function StrategyVisual({ content, lang, onCodeStep }: VisualProp
                     animate={{ y: 0, opacity: 1, rotate: 0 }}
                     exit={{ y: 36, opacity: 0, rotate: 6 }}
                     transition={{ type: 'spring', stiffness: 380, damping: 26 }}
-                    className="absolute inset-0 flex items-center justify-center gap-1 rounded-md px-2 font-mono text-xs font-semibold text-white shadow"
+                    className="absolute inset-0 flex items-center justify-center gap-1 rounded-md border-2 border-[#2b1d16] px-2 font-mono text-xs font-bold text-white"
                     style={{ backgroundColor: method.color }}
                   >
                     {method.icon} {method.className}
@@ -264,7 +264,7 @@ export default function StrategyVisual({ content, lang, onCodeStep }: VisualProp
               initial={swapCount > 0 ? { scale: 1.15, opacity: 0.4 } : false}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.4 }}
-              className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300"
+              className="inline-flex items-center gap-1 rounded-full border-2 border-bottle/60 bg-bottle/10 px-2 py-0.5 text-xs font-bold text-bottle dark:text-jade"
             >
               ✓ {v.unchanged}
             </motion.span>
@@ -319,7 +319,7 @@ export default function StrategyVisual({ content, lang, onCodeStep }: VisualProp
                 <span className="font-semibold" style={{ color: method.color }}>
                   {method.className}
                 </span>{' '}
-                <span className="text-slate-500 dark:text-slate-400">{v.implementsLabel}</span>
+                <span className="text-ink-soft">{v.implementsLabel}</span>
               </p>
               <ol className="flex flex-col gap-1.5">
                 {method.procs.map((proc, i) => {
@@ -329,8 +329,8 @@ export default function StrategyVisual({ content, lang, onCodeStep }: VisualProp
                       key={proc}
                       animate={{ x: status === 'active' ? 4 : 0 }}
                       className={`flex items-center gap-2 rounded-md px-2 py-1 text-sm transition-colors ${
-                        status === 'active' ? 'bg-white font-semibold shadow-sm dark:bg-slate-800' : ''
-                      } ${status === 'pending' ? 'text-slate-400 dark:text-slate-500' : ''}`}
+                        status === 'active' ? 'border-2 border-edge bg-card font-bold shadow-hard-sm' : 'border-2 border-transparent'
+                      } ${status === 'pending' ? 'text-ink-soft/70' : ''}`}
                     >
                       <StatusDot status={status} color={method.color} />
                       <span>{procLabel[proc]}</span>
@@ -350,8 +350,8 @@ export default function StrategyVisual({ content, lang, onCodeStep }: VisualProp
       </div>
 
       {/* ── Caption ──────────────────────────────────────────── */}
-      <div className="min-h-24 rounded-xl border border-indigo-200 bg-indigo-50/70 px-4 py-3 dark:border-indigo-500/30 dark:bg-indigo-500/10">
-        <p className="mb-1 text-xs font-semibold tracking-wide text-indigo-700 uppercase dark:text-indigo-300">
+      <div className="relative min-h-24 rounded-xl border-2 border-edge bg-card px-4 py-3 shadow-hard">
+        <p className="mb-1 label-caps text-chili">💬 
           {v.whatsHappening}
         </p>
         <AnimatePresence mode="wait" initial={false}>
@@ -361,7 +361,7 @@ export default function StrategyVisual({ content, lang, onCodeStep }: VisualProp
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }}
             transition={{ duration: 0.15 }}
-            className="prose-text text-sm text-slate-700 dark:text-slate-200"
+            className="prose-text text-sm text-ink"
             aria-live="polite"
           >
             {caption}
@@ -370,7 +370,7 @@ export default function StrategyVisual({ content, lang, onCodeStep }: VisualProp
       </div>
 
       <StepControls player={controls} playLabel={fill(v.payButton, { amount: formatTaka(AMOUNT, lang) })} />
-      <p className="text-xs text-slate-500 dark:text-slate-400">* {v.feeNote}</p>
+      <p className="text-xs text-ink-soft">* {v.feeNote}</p>
     </div>
   )
 }
@@ -398,16 +398,16 @@ function Node({
     <motion.div
       animate={{ scale: active ? 1.015 : 1 }}
       transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-      className="relative rounded-xl border-2 border-slate-200 bg-white p-3 transition-[border-color,box-shadow] duration-300 sm:p-4 dark:border-slate-700 dark:bg-slate-900"
-      style={active ? { borderColor: accent, boxShadow: `0 0 0 4px ${accent}26` } : undefined}
+      className="relative rounded-xl border-2 border-edge bg-card p-3 shadow-hard-sm transition-[box-shadow] duration-300 sm:p-4"
+      style={active ? { boxShadow: `4px 4px 0 0 var(--c-shade), 0 0 0 4px ${accent}55` } : undefined}
     >
       <div className="mb-3 flex flex-wrap items-center gap-2">
-        <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold tracking-wide text-slate-500 uppercase dark:bg-slate-800 dark:text-slate-400">
+        <span className="rounded border-2 border-edge/40 px-1.5 py-px text-[10px] font-bold tracking-[0.15em] text-ink-soft uppercase">
           {role}
         </span>
         <span
           lang={mono ? 'en' : undefined}
-          className={`font-semibold text-slate-900 dark:text-white ${mono ? 'font-mono text-sm' : ''}`}
+          className={`font-bold text-ink ${mono ? 'font-mono text-sm' : 'font-display text-base'}`}
         >
           {title}
         </span>
@@ -437,13 +437,13 @@ function Connector({
   return (
     <div className="relative h-16">
       <div
-        className={`absolute inset-y-1 left-1/2 w-0.5 -translate-x-1/2 transition-colors ${
-          active ? 'bg-indigo-500' : 'bg-slate-300 dark:bg-slate-700'
+        className={`absolute inset-y-1 left-1/2 w-1 -translate-x-1/2 rounded-full transition-colors ${
+          active ? 'bg-chili' : 'bg-edge/40'
         }`}
       />
       <svg
         className={`absolute bottom-0 left-1/2 -translate-x-1/2 transition-colors ${
-          active ? 'text-indigo-500' : 'text-slate-300 dark:text-slate-700'
+          active ? 'text-chili' : 'text-edge/40'
         }`}
         width="12"
         height="8"
@@ -455,7 +455,7 @@ function Connector({
       <code
         lang="en"
         className={`absolute top-1/2 right-[calc(50%+1rem)] -translate-y-1/2 truncate font-mono text-[11px] transition-colors sm:text-xs ${
-          active ? 'font-semibold text-indigo-600 dark:text-indigo-300' : 'text-slate-400 dark:text-slate-500'
+          active ? 'font-bold text-chili' : 'text-ink-soft/70'
         }`}
       >
         {label}
@@ -493,7 +493,7 @@ function Connector({
 function Packet({ color, children }: { color: string; children: ReactNode }) {
   return (
     <span
-      className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold whitespace-nowrap text-white shadow-md"
+      className="inline-flex items-center gap-1 rounded-full border-2 border-[#2b1d16] px-2 py-0.5 text-xs font-bold whitespace-nowrap text-white"
       style={{ backgroundColor: color }}
     >
       {children}
@@ -504,7 +504,7 @@ function Packet({ color, children }: { color: string; children: ReactNode }) {
 function StatusDot({ status, color }: { status: 'pending' | 'active' | 'done'; color: string }) {
   if (status === 'done') {
     return (
-      <span className="grid size-5 shrink-0 place-items-center rounded-full bg-emerald-500 text-[11px] text-white">✓</span>
+      <span className="grid size-5 shrink-0 place-items-center rounded-full border-2 border-edge bg-bottle text-[10px] font-bold text-cream">✓</span>
     )
   }
   if (status === 'active') {
@@ -517,5 +517,5 @@ function StatusDot({ status, color }: { status: 'pending' | 'active' | 'done'; c
       />
     )
   }
-  return <span className="size-5 shrink-0 rounded-full border-2 border-slate-300 dark:border-slate-600" />
+  return <span className="size-5 shrink-0 rounded-full border-2 border-dashed border-edge/40" />
 }

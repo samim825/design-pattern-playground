@@ -7,7 +7,7 @@ import { formatNumber } from '@/lib/format'
 import type { PatternDefinition } from '@/types/pattern'
 import { CodePanel } from './CodePanel'
 import { ComparePanel } from './ComparePanel'
-import { Card, Section } from './ui/Section'
+import { BarCard, Card, Section } from './ui/Section'
 
 /**
  * The fixed 4-section layout every pattern uses:
@@ -33,57 +33,62 @@ export function PatternPage({ pattern }: { pattern: PatternDefinition }) {
 
   return (
     <article className="mx-auto flex max-w-7xl flex-col gap-12 px-4 py-8 lg:px-8 lg:py-10">
-      {/* Title */}
-      <header>
-        <p className="mb-2 text-sm font-medium text-indigo-600 dark:text-indigo-400">{t(`category.${pattern.category}`)}</p>
-        <h1 className="flex items-center gap-3 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl dark:text-white">
-          <span aria-hidden="true">{pattern.icon}</span>
-          {content.title}
-        </h1>
-        <p className="prose-text mt-3 max-w-3xl text-lg text-slate-600 dark:text-slate-400">{content.tagline}</p>
+      {/* Title: maroon hero card */}
+      <header className="relative overflow-hidden rounded-xl border-2 border-edge bg-maroon text-cream shadow-hard">
+        <SunburstDecor />
+        <div className="relative flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:gap-6 sm:p-7">
+          <span
+            aria-hidden="true"
+            className="grid size-18 shrink-0 place-items-center rounded-full border-4 border-mustard bg-cream text-4xl shadow-[0_0_0_3px_#2b1d16]"
+          >
+            {pattern.icon}
+          </span>
+          <div className="min-w-0">
+            <p className="label-caps text-mustard">{t(`category.${pattern.category}`)}</p>
+            <h1 className="mt-1 font-display text-4xl leading-tight font-extrabold sm:text-5xl">{content.title}</h1>
+            <p className="prose-text mt-2 max-w-3xl text-base text-cream/90 sm:text-lg">{content.tagline}</p>
+          </div>
+        </div>
+        <div className="rickshaw-strip h-2 border-t-2 border-edge" aria-hidden="true" />
       </header>
 
       {/* 1. Scenario */}
       <Section id="scenario" number={1} title={t('pattern.sections.scenario')}>
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
           <Card className="p-6">
-            <h3 className="mb-3 text-lg font-semibold text-slate-900 dark:text-white">{content.scenario.title}</h3>
+            <h3 className="mb-3 font-display text-xl font-bold text-ink">{content.scenario.title}</h3>
             <div className="prose-text flex flex-col gap-3 leading-relaxed">
               {content.scenario.paragraphs.map((p, i) => (
                 <p key={i}>{p}</p>
               ))}
             </div>
           </Card>
-          <div className="flex flex-col gap-4">
-            <Card className="border-rose-200 bg-rose-50/60 p-5 dark:border-rose-500/30 dark:bg-rose-500/10">
-              <h3 className="mb-2 font-semibold text-rose-800 dark:text-rose-300">😣 {t('pattern.problem')}</h3>
+          <div className="flex flex-col gap-6">
+            <BarCard label={t('pattern.problem')} icon="😣" tone="chili">
               <p className="prose-text text-sm">{content.scenario.problem}</p>
-            </Card>
-            <Card className="border-indigo-200 bg-indigo-50/60 p-5 dark:border-indigo-500/30 dark:bg-indigo-500/10">
-              <h3 className="mb-2 font-semibold text-indigo-800 dark:text-indigo-300">🎯 {t('pattern.intent')}</h3>
+            </BarCard>
+            <BarCard label={t('pattern.intent')} icon="🎯" tone="bottle">
               <p className="prose-text text-sm">{content.intent}</p>
-            </Card>
+            </BarCard>
           </div>
         </div>
       </Section>
 
       {/* 2 + 3. Visual and synced code, side by side on wide screens */}
-      <div className="grid grid-cols-1 gap-10 xl:grid-cols-2 xl:gap-6">
+      <div className="grid grid-cols-1 gap-12 xl:grid-cols-2 xl:gap-6">
         <Section id="visual" number={2} title={t('pattern.sections.visual')}>
           <Suspense
-            fallback={
-              <Card className="grid h-96 place-items-center text-sm text-slate-500">{t('pattern.loadingVisual')}</Card>
-            }
+            fallback={<Card className="grid h-96 place-items-center text-sm text-ink-soft">{t('pattern.loadingVisual')}</Card>}
           >
             <Visual content={content} lang={lang} onCodeStep={setCodeStep} />
           </Suspense>
           {/* On narrow screens the code panel is below — show the running line here too. */}
           {activeLineIndex >= 0 && (
-            <div className="mt-3 flex items-center gap-2 overflow-hidden rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 xl:hidden dark:border-amber-400/30 dark:bg-amber-400/10">
-              <span className="shrink-0 text-xs font-medium text-amber-700 dark:text-amber-300">
+            <div className="mt-4 flex items-center gap-2 overflow-hidden rounded-lg border-2 border-edge bg-code px-3 py-2 shadow-hard-sm xl:hidden">
+              <span className="shrink-0 label-caps text-[#f2bf45]">
                 {t('pattern.runningLine', { line: formatNumber(activeLineIndex + 1, lang) })}
               </span>
-              <code lang="en" className="truncate font-mono text-xs">
+              <code lang="en" className="truncate font-mono text-xs text-[#e6edf3]">
                 {prepared.main.lines[activeLineIndex].text.trim()}
               </code>
             </div>
@@ -91,7 +96,7 @@ export function PatternPage({ pattern }: { pattern: PatternDefinition }) {
         </Section>
 
         <Section id="code" number={3} title={t('pattern.sections.code')}>
-          <div className="xl:sticky xl:top-20">
+          <div className="xl:sticky xl:top-24">
             <CodePanel prepared={prepared.main} filename={code.main.filename} activeStep={codeStep} />
           </div>
         </Section>
@@ -106,5 +111,30 @@ export function PatternPage({ pattern }: { pattern: PatternDefinition }) {
         />
       </Section>
     </article>
+  )
+}
+
+/** Faint sun rays in the hero corner, a nod to rickshaw-art backdrops. */
+function SunburstDecor() {
+  return (
+    <svg
+      aria-hidden="true"
+      className="pointer-events-none absolute -top-10 -right-10 size-64 text-mustard opacity-15"
+      viewBox="0 0 200 200"
+    >
+      <circle cx="100" cy="100" r="34" fill="currentColor" />
+      {Array.from({ length: 16 }, (_, i) => (
+        <rect
+          key={i}
+          x="96"
+          y="12"
+          width="8"
+          height="40"
+          rx="4"
+          fill="currentColor"
+          transform={`rotate(${i * 22.5} 100 100)`}
+        />
+      ))}
+    </svg>
   )
 }

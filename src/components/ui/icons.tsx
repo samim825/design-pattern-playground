@@ -87,9 +87,9 @@ export const ArrowRightIcon = (p: IconProps) => (
 )
 export const LogoIcon = (p: IconProps) => (
   <svg viewBox="0 0 32 32" width="1em" height="1em" aria-hidden="true" {...p}>
-    <rect width="32" height="32" rx="8" fill="#4f46e5" />
-    <rect x="7" y="7" width="8" height="8" rx="2" fill="#fff" />
-    <rect x="17" y="17" width="8" height="8" rx="2" fill="#fff" />
-    <path d="M15 11h4a2 2 0 0 1 2 2v4" stroke="#c7d2fe" strokeWidth="2" fill="none" />
+    <rect x="1" y="1" width="30" height="30" rx="7" fill="#fdf3dc" stroke="#2b1d16" strokeWidth="2" />
+    <rect x="7" y="7" width="9" height="9" rx="2" fill="#f2bf45" stroke="#2b1d16" strokeWidth="1.5" />
+    <circle cx="20.5" cy="20.5" r="5" fill="#e0393e" stroke="#2b1d16" strokeWidth="1.5" />
+    <path d="M16 11.5h4.5V15.5" stroke="#0b6b4f" strokeWidth="1.8" fill="none" strokeLinecap="round" />
   </svg>
 )

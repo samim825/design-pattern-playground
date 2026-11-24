@@ -23,10 +23,10 @@ function useTokens(code: string): ThemedToken[][] | null {
 }
 
 type Tone = 'neutral' | 'bad' | 'good'
-const toneDot: Record<Tone, string> = {
-  neutral: 'bg-indigo-400',
-  bad: 'bg-rose-500',
-  good: 'bg-emerald-500',
+const toneBar: Record<Tone, string> = {
+  neutral: 'bg-mustard text-on-accent',
+  bad: 'bg-chili text-cream',
+  good: 'bg-bottle text-cream',
 }
 
 /**
@@ -77,10 +77,14 @@ export function CodePanel({
   }
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-[#0d1117]">
-      <div className="flex items-center gap-2 border-b border-slate-200 bg-slate-50 px-4 py-2 dark:border-slate-800 dark:bg-slate-900">
-        <span className={`size-2.5 rounded-full ${toneDot[tone]}`} aria-hidden="true" />
-        <span lang="en" className="font-mono text-xs text-slate-600 dark:text-slate-400">
+    <div className="overflow-hidden rounded-xl border-2 border-edge bg-code shadow-hard">
+      <div className={`flex items-center gap-2 border-b-2 border-edge px-3 py-1.5 ${toneBar[tone]}`}>
+        <span aria-hidden="true" className="flex gap-1">
+          <span className="size-2 rounded-full bg-current opacity-80" />
+          <span className="size-2 rounded-full bg-current opacity-50" />
+          <span className="size-2 rounded-full bg-current opacity-30" />
+        </span>
+        <span lang="en" className="truncate font-mono text-xs font-bold">
           {filename}
         </span>
         <button
@@ -88,13 +92,13 @@ export function CodePanel({
           onClick={copy}
           aria-label={t('code.copy')}
           title={copied ? t('code.copied') : t('code.copy')}
-          className="ml-auto grid size-7 place-items-center rounded-md text-slate-500 hover:bg-slate-200 hover:text-slate-800 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+          className="ml-auto grid size-7 shrink-0 place-items-center rounded-md hover:bg-black/10"
         >
-          {copied ? <CheckIcon className="text-emerald-500" /> : <CopyIcon />}
+          {copied ? <CheckIcon /> : <CopyIcon />}
         </button>
       </div>
       <div ref={scrollRef} className="relative overflow-auto" style={{ maxHeight }}>
-        <pre className="min-w-max py-3 font-mono text-[13px] leading-6">
+        <pre className="min-w-max py-3 font-mono text-[13px] leading-6 text-[#e6edf3]">
           <code>
             {prepared.lines.map((line, i) => {
               const active = isActive(i)
@@ -102,16 +106,14 @@ export function CodePanel({
                 <div
                   key={i}
                   data-active={active}
-                  className={`flex border-l-[3px] pr-4 transition-colors duration-300 ${
-                    active
-                      ? 'border-amber-400 bg-amber-100/80 dark:border-amber-400 dark:bg-amber-400/15'
-                      : 'border-transparent'
+                  className={`flex border-l-4 pr-4 transition-colors duration-300 ${
+                    active ? 'border-[#f2bf45] bg-[#f2bf45]/15' : 'border-transparent'
                   }`}
                 >
                   <span
                     aria-hidden="true"
                     className={`w-10 shrink-0 pr-3 text-right tabular-nums select-none ${
-                      active ? 'text-amber-600 dark:text-amber-300' : 'text-slate-400 dark:text-slate-600'
+                      active ? 'font-bold text-[#f2bf45]' : 'text-[#5d6f68]'
                     }`}
                   >
                     {i + 1}

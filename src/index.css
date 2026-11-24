@@ -2,10 +2,101 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/*
+ * Theme: Bangladeshi folk / rickshaw-art.
+ * Colors are CSS variables so dark mode only swaps values — components use the
+ * semantic names below (bg-paper, bg-card, border-edge, text-ink, bg-mustard…)
+ * and rarely need `dark:` variants.
+ */
+:root {
+  --c-paper: #f7ead0; /* page background */
+  --c-paper-deep: #f1dfb9; /* sidebar */
+  --c-card: #fffaf0; /* cards */
+  --c-ink: #2b1d16; /* main text */
+  --c-ink-soft: #6d5747; /* muted text */
+  --c-edge: #2b1d16; /* thick outlines */
+  --c-shade: #2b1d16; /* hard offset shadows */
+  --c-bottle: #0b6b4f; /* bottle green (header) */
+  --c-maroon: #6f1d2b; /* hero cards */
+  --c-mustard: #f2bf45; /* bars, primary buttons */
+  --c-chili: #e0393e; /* red accents */
+  --c-jade: #24877c; /* teal accents */
+  --c-cream: #fdf3dc; /* text on dark surfaces */
+  --c-code: #1e2925; /* code panels (always dark) */
+  --c-motif: #8a6a45;
+}
+
+:root.dark {
+  --c-paper: #111a16;
+  --c-paper-deep: #0d1512;
+  --c-card: #1a2621;
+  --c-ink: #f3e6cb;
+  --c-ink-soft: #b5a68b;
+  --c-edge: #3d5048;
+  --c-shade: #030605;
+  --c-bottle: #0c5a43;
+  --c-maroon: #5b1824;
+  --c-mustard: #e8b73f;
+  --c-chili: #ef5a5e;
+  --c-jade: #3aa597;
+  --c-cream: #fdf3dc;
+  --c-code: #141d1a;
+  --c-motif: #6b8a7c;
+}
+
+@theme inline {
+  --color-paper: var(--c-paper);
+  --color-paper-deep: var(--c-paper-deep);
+  --color-card: var(--c-card);
+  --color-ink: var(--c-ink);
+  --color-ink-soft: var(--c-ink-soft);
+  --color-edge: var(--c-edge);
+  --color-shade: var(--c-shade);
+  --color-bottle: var(--c-bottle);
+  --color-maroon: var(--c-maroon);
+  --color-mustard: var(--c-mustard);
+  --color-chili: var(--c-chili);
+  --color-jade: var(--c-jade);
+  --color-cream: var(--c-cream);
+  --color-code: var(--c-code);
+  /* text that sits on mustard/cream stays dark in both themes */
+  --color-on-accent: #2b1d16;
+}
+
 @theme {
-  --font-sans: 'Inter', 'Hind Siliguri', ui-sans-serif, system-ui, sans-serif;
-  --font-bangla: 'Hind Siliguri', 'Inter', ui-sans-serif, system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-sans: 'Hind Siliguri', ui-sans-serif, system-ui, sans-serif;
+  --font-bangla: 'Hind Siliguri', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Baloo Da 2', 'Hind Siliguri', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Hind Siliguri', ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+/* Hard offset "printed sticker" shadow. */
+@utility shadow-hard {
+  box-shadow: 4px 4px 0 0 var(--c-shade);
+}
+@utility shadow-hard-sm {
+  box-shadow: 2px 2px 0 0 var(--c-shade);
+}
+
+/* Small tracked-caps label, e.g. "FIELD NOTE · STUDY THIS FIRST". */
+@utility label-caps {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+/* Rickshaw-art tassel stripe. */
+@utility rickshaw-strip {
+  background: repeating-linear-gradient(
+    90deg,
+    #0b6b4f 0 26px,
+    #e0393e 26px 38px,
+    #f2bf45 38px 60px,
+    #24877c 60px 72px,
+    #e0393e 72px 84px,
+    #fdf3dc 84px 90px
+  );
 }
 
 html {
@@ -13,30 +104,36 @@ html {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Bangla text uses Hind Siliguri; slightly larger line-height reads better. */
-html:lang(bn) body {
-  font-family: var(--font-bangla);
-}
 html:lang(bn) .prose-text {
   line-height: 1.85;
 }
 
 body {
-  @apply bg-slate-50 text-slate-800 antialiased dark:bg-slate-950 dark:text-slate-200;
+  background-color: var(--c-paper);
+  color: var(--c-ink);
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Shiki dual-theme tokens: colors come from CSS variables per token. */
-.shiki-token {
-  color: var(--shiki-light);
+/* Printed motif on the main area: a little leaf + a square, like folk block print. */
+.bg-motif {
+  background-color: var(--c-paper);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='44' viewBox='0 0 64 44'%3E%3Cg fill='none' stroke='%238a6a45' stroke-opacity='.22' stroke-width='1.6' stroke-linejoin='round'%3E%3Crect x='6' y='15' width='12' height='12' rx='1.5'/%3E%3Cpath d='M34 33c-3-10 3-19 16-21-4 3-5 8-4 12-3-2-8-1-12 9z'/%3E%3Cpath d='M40 27c2-4 5-7 8-9'/%3E%3C/g%3E%3C/svg%3E");
 }
-.dark .shiki-token {
+.dark .bg-motif {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='44' viewBox='0 0 64 44'%3E%3Cg fill='none' stroke='%236b8a7c' stroke-opacity='.18' stroke-width='1.6' stroke-linejoin='round'%3E%3Crect x='6' y='15' width='12' height='12' rx='1.5'/%3E%3Cpath d='M34 33c-3-10 3-19 16-21-4 3-5 8-4 12-3-2-8-1-12 9z'/%3E%3Cpath d='M40 27c2-4 5-7 8-9'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* Code panels are always dark (like a chalkboard), so always use Shiki's dark colors. */
+.shiki-token {
   color: var(--shiki-dark);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    scroll-behavior: auto !important;
-  }
+::selection {
+  background: color-mix(in srgb, var(--c-mustard) 60%, transparent);
+  color: #2b1d16;
+}
+
+/* Letter-spacing breaks up Bangla conjuncts — keep caps labels tight in বাংলা. */
+html:lang(bn) .label-caps {
+  letter-spacing: 0.02em;
 }
