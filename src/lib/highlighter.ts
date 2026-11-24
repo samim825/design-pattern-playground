@@ -8,6 +8,13 @@ const GRAMMARS: Record<CodeLang, { id: string; load: () => LanguageInput }> = {
   ts: { id: 'typescript', load: () => import('shiki/langs/typescript.mjs') },
   java: { id: 'java', load: () => import('shiki/langs/java.mjs') },
   csharp: { id: 'csharp', load: () => import('shiki/langs/csharp.mjs') },
+  python: { id: 'python', load: () => import('shiki/langs/python.mjs') },
+  go: { id: 'go', load: () => import('shiki/langs/go.mjs') },
+  rust: { id: 'rust', load: () => import('shiki/langs/rust.mjs') },
+  cpp: { id: 'cpp', load: () => import('shiki/langs/cpp.mjs') },
+  php: { id: 'php', load: () => import('shiki/langs/php.mjs') },
+  ruby: { id: 'ruby', load: () => import('shiki/langs/ruby.mjs') },
+  swift: { id: 'swift', load: () => import('shiki/langs/swift.mjs') },
 }
 
 let highlighter: Promise<HighlighterCore> | undefined

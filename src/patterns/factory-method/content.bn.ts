@@ -86,6 +86,7 @@ export const bn: DeepPartial<FactoryMethodContent> = {
     factoryMethod: 'Factory method: কী তৈরি হবে, subclass ঠিক করে',
     shared: 'একবার লেখা, সব শাখা inherit করে',
     noNew: 'এখানে কোনো "new" নেই!',
+    noConcrete: 'এখানে কোনো concrete class-এর নাম নেই!',
     concreteCreators: 'Concrete creator: প্রতিটা শাখা নিজের গাড়ি বেছে নেয়',
     usage: 'Client কোড',
     withoutIntro: 'বুকিং কোডকেই প্রতিটা শহরের গাড়ি বাছতে হচ্ছে',

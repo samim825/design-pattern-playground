@@ -38,8 +38,9 @@ Follow these steps in order.
      constructor, a giant if/else, duplicated code or tight coupling. The "with" side
      shows how easy the next change becomes.
 4. **Write the files** in `src/patterns/<id>/` (see [anatomy](#anatomy-of-a-pattern-folder)):
-   - `code/ts.ts` first, since it defines the step ids. Then `code/java.ts` and
-     `code/csharp.ts` (same story, same step ids, idiomatic for that language), and
+   - `code/ts.ts` first, since it defines the step ids. Then the other nine
+     languages, one file each: `java`, `csharp`, `python`, `go`, `rust`, `cpp`, `php`,
+     `ruby`, `swift` (same story, same step ids, idiomatic for that language), and
      `code/index.ts`.
    - Then `content.en.ts` and `content.bn.ts`. Bangla is **complete and natural**, see
      the [bilingual rules](#bilingual-rules).
@@ -58,8 +59,8 @@ Follow these steps in order.
    - a missing section, or code that isn't highlighted
    - horizontal scroll on mobile
    - a step that highlights no code line, or has an empty caption, in **any** code
-     language (TS, Java and C# are all walked; a language whose `@step` ids differ
-     from TypeScript logs a warning)
+     language (all 10 are walked; a language whose `@step` ids differ from TypeScript
+     logs a warning)
    - visible `{{placeholders}}`
 7. **Look at the screenshots** it writes to `.check/<id>/` (open the PNGs with the Read
    tool) and fix anything that looks broken or cramped:
@@ -83,10 +84,10 @@ Follow these steps in order.
       steps, where messages or objects visibly move between `<Node>`s.
 - [ ] Every step highlights the matching code line(s), and every caption explains *why*,
       not just *what*.
-- [ ] Code exists in **TypeScript, Java and C#** (all required). Each `main` is 30–60
-      lines (C# Allman braces may run a little longer) of idiomatic code showing all
-      pattern roles plus a short client usage. `without` and `with` are each under
-      about 30 lines.
+- [ ] Code exists in **all 10 languages**: Java, C#, TS (type-enforced) plus Python,
+      Go, Rust, C++, PHP, Ruby, Swift. Each `main` is 30–60 lines (Allman-brace
+      languages may run a little longer) of idiomatic code showing all pattern roles
+      plus a short client usage. `without` and `with` are each under about 30 lines.
 - [ ] No hard-coded UI text in `Visual.tsx`: every label comes from `content.visual`.
 - [ ] `content.bn.ts` has **every** key, even when the value is the same English term.
 - [ ] Uses theme tokens and the shared `components/visual` blocks. Works at 360px and in dark mode.
@@ -121,10 +122,10 @@ src/
 │   ├── useStepPlayer.ts     play / pause / step / reset / speed timeline for visuals
 │   ├── usePatternContent.ts current-language content, English fallback, dev warning for missing Bangla
 │   ├── useTheme.ts          light/dark toggle (localStorage `dpp-theme`)
-│   └── useCodeLang.ts       TS / Java / C# choice shared by all code panels (localStorage `dpp-code-lang`)
+│   └── useCodeLang.ts       code-language choice shared by all code panels (localStorage `dpp-code-lang`)
 ├── lib/
 │   ├── code.ts              prepareCode(): fills {{comment}} placeholders, strips @step markers; step-parity check
-│   ├── highlighter.ts       Shiki core; TS / Java / C# grammars loaded on demand
+│   ├── highlighter.ts       Shiki core; one grammar per code language, loaded on demand
 │   ├── format.ts            formatNumber / formatTaka (Bangla digits in বাংলা mode)
 │   ├── template.ts          fill('Pay {{amount}}', values) for captions and labels
 │   └── merge.ts             English-fallback merge + findMissing()
@@ -133,7 +134,7 @@ src/
 │   ├── visual/index.tsx     shared visual blocks: Stage, Node, Connector, Packet, StatusDot, Caption
 │   ├── PatternPage.tsx      the 4-section page shell; every pattern renders through it
 │   ├── CodePanel.tsx        highlighted code + running-line highlight + auto-scroll
-│   ├── CodeLangTabs.tsx     the Java | C# | TS switch
+│   ├── CodeLangTabs.tsx     the Java | C# | TS | … switch (wraps on mobile)
 │   ├── ComparePanel.tsx     Without vs With
 │   ├── LanguageToggle.tsx, ThemeToggle.tsx, ErrorBoundary.tsx
 │   └── ui/                  Button, Section/Card/BarCard, StepControls, icons
@@ -155,7 +156,7 @@ them from the pattern's data, so a pattern can't skip or reorder them:
 2. **Interactive visualization**: `Visual.tsx`. The learner chooses something, presses
    Play or Step, and watches objects and messages animate, with a "What's happening"
    caption for each step.
-3. **Code panel**: `main`, with a `Java | C# | TS` switch above it. The line that is
+3. **Code panel**: `main`, with a `Java | C# | TS | Python | Go | …` switch above it. The line that is
    currently "running" is highlighted in sync with the visualization, in every language.
 4. **Without vs With**: `without` (the messy version) next to `with` (the pattern
    version) in the chosen language, followed by bullet points, "Why it's better" and
@@ -169,10 +170,9 @@ src/patterns/<id>/
 ├── content.en.ts   export const en = { ... } satisfies PatternContent; export type XContent = typeof en
 ├── content.bn.ts   export const bn: DeepPartial<XContent> = { ... }   (typos in keys are type errors)
 ├── code/
-│   ├── index.ts    export const xCode: PatternCode = { ts, java, csharp }
+│   ├── index.ts    export const xCode: PatternCode = { java, csharp, ts, python, go, rust, cpp, php, ruby, swift }
 │   ├── ts.ts       export const ts: CodeSet = { main, without, with }   (code as strings)
-│   ├── java.ts     export const java: CodeSet = { ... }
-│   └── csharp.ts   export const csharp: CodeSet = { ... }
+│   └── java.ts, csharp.ts, python.ts, go.ts, rust.ts, cpp.ts, php.ts, ruby.ts, swift.ts
 └── Visual.tsx      export default function XVisual({ content, lang, onCodeStep }: VisualProps<XContent>)
 ```
 
@@ -193,13 +193,24 @@ src/patterns/<id>/
 
 ### Code snippet conventions (`code/*.ts`)
 
-- Every pattern ships the same example in **TypeScript, Java and C#** (`CODE_LANGS` in
-  `src/types/pattern.ts`). The learner picks one with the `Java | C# | TS` switch
-  (saved in localStorage as `dpp-code-lang`); it drives the code panel and Without vs With.
+- Every pattern ships the same example in **10 languages**, in this tab order:
+  Java, C#, TS, Python, Go, Rust, C++, PHP, Ruby, Swift (`CODE_LANGS` in
+  `src/types/pattern.ts`; Java is the default). Java, C# and TS are `required` (a type
+  error if missing); the other seven are expected for every pattern too, but if one is
+  missing its tab is simply hidden. The choice is saved in localStorage as
+  `dpp-code-lang` and drives the code panel and Without vs With.
 - Write each language **idiomatically**, not as a line-by-line port: Java uses
   `record`, `@Override`, `switch ->`; C# uses `IInterface` names, PascalCase methods,
-  `=>` members, Allman braces. Keep the class names and the story identical, so the
-  visual (which shows TS-style names) still matches.
+  `=>` members, Allman braces; Python uses `dataclass`/`ABC`/`Protocol` and snake_case;
+  Go and Rust have no inheritance, so use interfaces/function fields (Go) and traits
+  with default methods (Rust); C++ uses `virtual`/`override` and `std::unique_ptr`;
+  Swift uses protocols + extensions. Keep the story and type names the same, so the
+  visual still matches.
+- Python and Ruby use `# {{key}}` and `# @step:x`. PHP snippets must start with
+  `<?php` or they are highlighted as HTML. Swift: never use `\(x)` interpolation
+  (the backslash is eaten by the template string); concatenate instead.
+- Comment text must make sense in every language: e.g. don't say "no new here" in a
+  language without `new` (Factory Method uses a separate `noConcrete` key for those).
 - Every language's `main` must use exactly the same `@step` ids as `ts.ts`.
 - Code is written as template strings. Keep it compact and self-explanatory. Helper
   calls like `verifyOtp(...)` may stay undeclared.
@@ -208,12 +219,12 @@ src/patterns/<id>/
 - `// @step:a,b` at the **end** of a line lights that line up while visual step `a` or
   `b` runs. The marker is stripped before display. Several lines may share a step id.
 - Both can sit on one line: `const fee = amount * 0.01; // {{nagadFee}} // @step:nagad-fee`.
-- Avoid backticks and `${` inside the snippets, since they end or interpolate the
-  template string. Use `'…' + x` (TS) or `"…" + x` (Java, C#), not C# `$"{x}"`.
-- Comment keys are shared: all three languages reuse the same `codeComments` keys.
-- To add another language (Python, Go…): add it to `CODE_LANGS`, add its Shiki grammar
+- Avoid backticks, `${` and backslashes inside the snippets, since the template
+  string ends, interpolates or swallows them. Concatenate (`'…' + x`, `"…" . $x`) or
+  use interpolation that avoids them (Python `f"{x}"`, Ruby `"#{x}"`, Rust `format!("{x}")`).
+- Comment keys are shared: all languages reuse the same `codeComments` keys.
+- To add another language (Kotlin, Dart…): add it to `CODE_LANGS`, add its Shiki grammar
   in `src/lib/highlighter.ts`, then write `code/<lang>.ts` for every built pattern.
-  Languages with `#` comments may use `# {{key}}` and `# @step:x`.
 
 ### Writing `Visual.tsx`
 

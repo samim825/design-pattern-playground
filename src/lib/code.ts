@@ -54,7 +54,9 @@ export function stepIds(source: string): Set<string> {
 export function checkStepParity(patternId: string, code: PatternCode) {
   const reference = stepIds(code.ts.main.source)
   for (const lang of Object.keys(code) as CodeLang[]) {
-    const ids = stepIds(code[lang].main.source)
+    const set = code[lang]
+    if (!set) continue
+    const ids = stepIds(set.main.source)
     const missing = [...reference].filter((id) => !ids.has(id))
     const extra = [...ids].filter((id) => !reference.has(id))
     if (missing.length || extra.length) {

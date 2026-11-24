@@ -55,9 +55,13 @@ const browser = await puppeteer.launch({ executablePath, headless: true, args: [
 const failures = []
 const fail = (combo, msg) => failures.push(`[${combo}] ${msg}`)
 
-// Code languages come from the app itself, so a new language is checked automatically.
+// Code languages this pattern actually has, in tab order (the first one is the default).
 const { CODE_LANGS } = await server.ssrLoadModule('/src/types/pattern.ts')
-const codeLangs = CODE_LANGS.map((l) => l.id)
+const { patterns } = await server.ssrLoadModule('/src/patterns/registry.ts')
+const pattern = patterns.find((p) => p.id === id)
+const codeLangs = CODE_LANGS.map((l) => l.id).filter((l) => !pattern || pattern.code[l])
+const missingLangs = CODE_LANGS.filter((l) => pattern && !pattern.code[l.id]).map((l) => l.id)
+if (missingLangs.length) console.warn(`  note: no code yet for ${missingLangs.join(', ')} (optional languages)`)
 
 const combos = []
 for (const lang of ['en', 'bn'])
@@ -67,11 +71,12 @@ for (const lang of ['en', 'bn'])
       ['mobile', 360, 780],
     ])
       combos.push({ lang, theme, device, width, height, codeLang: codeLangs[0] })
-// Every other code language: one desktop and one mobile run.
-for (const codeLang of codeLangs.slice(1)) {
+// Every other code language: one desktop and one mobile run, alternating language and theme.
+codeLangs.slice(1).forEach((codeLang, n) => {
+  const [lang, theme] = n % 2 ? ['en', 'dark'] : ['bn', 'light']
   combos.push({ lang: 'en', theme: 'light', device: 'desktop', width: 1366, height: 900, codeLang })
-  combos.push({ lang: 'bn', theme: 'dark', device: 'mobile', width: 360, height: 780, codeLang })
-}
+  combos.push({ lang, theme, device: 'mobile', width: 360, height: 780, codeLang })
+})
 
 try {
   // Warm up: lets Vite pre-bundle deps before the real runs.

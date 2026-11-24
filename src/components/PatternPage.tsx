@@ -5,7 +5,7 @@ import { usePatternContent } from '@/hooks/usePatternContent'
 import { useLang } from '@/i18n'
 import { checkStepParity, prepareCode } from '@/lib/code'
 import { formatNumber } from '@/lib/format'
-import type { PatternDefinition } from '@/types/pattern'
+import { CODE_LANGS, type PatternDefinition } from '@/types/pattern'
 import { CodeLangTabs } from './CodeLangTabs'
 import { CodePanel } from './CodePanel'
 import { ComparePanel } from './ComparePanel'
@@ -20,9 +20,12 @@ export function PatternPage({ pattern }: { pattern: PatternDefinition }) {
   const lang = useLang()
   const content = usePatternContent(pattern)
   const [codeStep, setCodeStep] = useState<string | null>(null)
-  const codeLang = useCodeLang()
+  const savedCodeLang = useCodeLang()
   const { Visual } = pattern
-  const code = pattern.code[codeLang]
+  const availableLangs = useMemo(() => CODE_LANGS.map((l) => l.id).filter((id) => pattern.code[id]), [pattern])
+  // A pattern may lack an optional language: fall back to the first (required) one.
+  const codeLang = pattern.code[savedCodeLang] ? savedCodeLang : CODE_LANGS[0].id
+  const code = pattern.code[codeLang] ?? pattern.code.java
 
   const prepared = useMemo(
     () => ({
@@ -106,7 +109,7 @@ export function PatternPage({ pattern }: { pattern: PatternDefinition }) {
 
         <Section id="code" number={3} title={t('pattern.sections.code')}>
           <div className="flex flex-col gap-3 xl:sticky xl:top-24">
-            <CodeLangTabs className="self-start" />
+            <CodeLangTabs available={availableLangs} current={codeLang} className="self-start" />
             <CodePanel prepared={prepared.main} lang={codeLang} filename={code.main.filename} activeStep={codeStep} />
           </div>
         </Section>
@@ -114,7 +117,7 @@ export function PatternPage({ pattern }: { pattern: PatternDefinition }) {
 
       {/* 4. Without vs With */}
       <Section id="compare" number={4} title={t('pattern.sections.compare')}>
-        <CodeLangTabs className="mb-4" />
+        <CodeLangTabs available={availableLangs} current={codeLang} className="mb-4" />
         <ComparePanel
           compare={content.compare}
           lang={codeLang}

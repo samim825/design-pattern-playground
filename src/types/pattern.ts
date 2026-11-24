@@ -48,16 +48,25 @@ export interface PatternContent {
 
 /**
  * Programming languages the example code is shown in, in tab order (the first is the
- * default). Every pattern must provide
- * a CodeSet for each of these. To add a language: add it here, add its Shiki
- * grammar in lib/highlighter.ts, then write code/<id>.ts for every pattern.
+ * default and must be required). `required` languages must exist for every pattern;
+ * the others are expected too (see CLAUDE.md) but a pattern without them still works,
+ * its tab is simply hidden. To add a language: add it here, add its Shiki grammar in
+ * lib/highlighter.ts, then write code/<id>.ts for every pattern.
  */
 export const CODE_LANGS = [
-  { id: 'java', label: 'Java', short: 'Java' },
-  { id: 'csharp', label: 'C#', short: 'C#' },
-  { id: 'ts', label: 'TypeScript', short: 'TS' },
+  { id: 'java', label: 'Java', short: 'Java', required: true },
+  { id: 'csharp', label: 'C#', short: 'C#', required: true },
+  { id: 'ts', label: 'TypeScript', short: 'TS', required: true },
+  { id: 'python', label: 'Python', short: 'Python', required: false },
+  { id: 'go', label: 'Go', short: 'Go', required: false },
+  { id: 'rust', label: 'Rust', short: 'Rust', required: false },
+  { id: 'cpp', label: 'C++', short: 'C++', required: false },
+  { id: 'php', label: 'PHP', short: 'PHP', required: false },
+  { id: 'ruby', label: 'Ruby', short: 'Ruby', required: false },
+  { id: 'swift', label: 'Swift', short: 'Swift', required: false },
 ] as const
 export type CodeLang = (typeof CODE_LANGS)[number]['id']
+export type RequiredCodeLang = Extract<(typeof CODE_LANGS)[number], { required: true }>['id']
 
 export interface CodeSnippet {
   /** Label shown above the code, e.g. "checkout.ts" or "Checkout.java". */
@@ -82,7 +91,7 @@ export interface CodeSet {
 }
 
 /** One CodeSet per programming language; every language uses the same @step ids. */
-export type PatternCode = Record<CodeLang, CodeSet>
+export type PatternCode = Record<RequiredCodeLang, CodeSet> & Partial<Record<CodeLang, CodeSet>>
 
 export interface VisualProps<C extends PatternContent = PatternContent> {
   content: C

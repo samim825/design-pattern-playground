@@ -82,6 +82,7 @@ export const en = {
     factoryMethod: 'The factory method: subclasses decide what to create',
     shared: 'Written once and inherited by every branch',
     noNew: 'no "new" here!',
+    noConcrete: 'no concrete class named here!',
     concreteCreators: 'Concrete creators: each branch picks its own vehicle',
     usage: 'Client code',
     withoutIntro: 'The booking code itself must choose a vehicle for every city',
