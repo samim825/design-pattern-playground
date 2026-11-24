@@ -49,7 +49,7 @@ interface VisualStep extends PlayerStep {
   proc?: ProcId
 }
 
-/** Step ids double as code-step ids — they match the `// @step:` markers in code.ts. */
+/** Step ids double as code-step ids — they match the `// @step:` markers in code/*.ts. */
 function buildSteps(m: Method): VisualStep[] {
   return [
     { id: 'client-pay', kind: 'client-pay' },

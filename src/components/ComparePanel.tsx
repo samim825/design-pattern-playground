@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import type { PreparedCode } from '@/lib/code'
-import type { CodeSnippet, PatternContent } from '@/types/pattern'
+import type { CodeLang, CodeSnippet, PatternContent } from '@/types/pattern'
 import { CodePanel } from './CodePanel'
 import { BarCard } from './ui/Section'
 import { CheckIcon, CrossIcon } from './ui/icons'
@@ -8,10 +8,12 @@ import { CheckIcon, CrossIcon } from './ui/icons'
 /** Section 4: messy version vs pattern version, side by side (stacked on small screens). */
 export function ComparePanel({
   compare,
+  lang,
   without,
   withPattern,
 }: {
   compare: PatternContent['compare']
+  lang: CodeLang
   without: { snippet: CodeSnippet; prepared: PreparedCode }
   withPattern: { snippet: CodeSnippet; prepared: PreparedCode }
 }) {
@@ -37,7 +39,7 @@ export function ComparePanel({
               </span>
               <h3 className="mt-2 font-display text-lg font-bold text-ink">{col.data.title}</h3>
             </div>
-            <CodePanel prepared={col.code.prepared} filename={col.code.snippet.filename} tone={col.tone} maxHeight="26rem" />
+            <CodePanel prepared={col.code.prepared} lang={lang} filename={col.code.snippet.filename} tone={col.tone} maxHeight="26rem" />
             <ul className="prose-text flex flex-col gap-1.5 text-sm">
               {col.data.points.map((p, i) => (
                 <li key={i} className="flex gap-2">

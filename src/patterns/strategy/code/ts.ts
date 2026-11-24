@@ -1,4 +1,4 @@
-import type { PatternCode } from '@/types/pattern'
+import type { CodeSet } from '@/types/pattern'
 
 /*
  * Conventions (see CLAUDE.md):
@@ -105,7 +105,7 @@ checkout.setStrategy(new RocketPayment()); // {{withSwap}}
 checkout.pay(1250);
 `
 
-export const strategyCode: PatternCode = {
+export const ts: CodeSet = {
   main: { filename: 'checkout.ts', source: main },
   without: { filename: 'checkout-without-strategy.ts', source: without },
   with: { filename: 'checkout-with-strategy.ts', source: withPattern },

@@ -9,6 +9,8 @@
  *   - the page scrolls horizontally
  *   - a step of the visualization highlights no code line, or has an empty caption
  *   - unfilled "{{placeholders}}" are visible
+ *   - any of the above in another code language (Java, C#…): every language is
+ *     walked step by step, and the code language switch must work
  * Screenshots are written to .check/<id>/ for a visual review.
  *
  * Chrome: set CHROME_PATH, otherwise common install locations are tried.
@@ -53,6 +55,10 @@ const browser = await puppeteer.launch({ executablePath, headless: true, args: [
 const failures = []
 const fail = (combo, msg) => failures.push(`[${combo}] ${msg}`)
 
+// Code languages come from the app itself, so a new language is checked automatically.
+const { CODE_LANGS } = await server.ssrLoadModule('/src/types/pattern.ts')
+const codeLangs = CODE_LANGS.map((l) => l.id)
+
 const combos = []
 for (const lang of ['en', 'bn'])
   for (const theme of ['light', 'dark'])
@@ -60,7 +66,12 @@ for (const lang of ['en', 'bn'])
       ['desktop', 1366, 900],
       ['mobile', 360, 780],
     ])
-      combos.push({ lang, theme, device, width, height })
+      combos.push({ lang, theme, device, width, height, codeLang: codeLangs[0] })
+// Every other code language: one desktop and one mobile run.
+for (const codeLang of codeLangs.slice(1)) {
+  combos.push({ lang: 'en', theme: 'light', device: 'desktop', width: 1366, height: 900, codeLang })
+  combos.push({ lang: 'bn', theme: 'dark', device: 'mobile', width: 360, height: 780, codeLang })
+}
 
 try {
   // Warm up: lets Vite pre-bundle deps before the real runs.
@@ -72,7 +83,8 @@ try {
   }
 
   for (const c of combos) {
-    const combo = `${c.lang}/${c.theme}/${c.device}`
+    const combo = `${c.lang}/${c.theme}/${c.device}/${c.codeLang}`
+    const shot = `${c.lang}-${c.theme}-${c.device}` + (c.codeLang === codeLangs[0] ? '' : `-${c.codeLang}`)
     const page = await browser.newPage()
     page.on('console', (m) => {
       const text = m.text()
@@ -83,12 +95,14 @@ try {
     page.on('pageerror', (e) => fail(combo, `page error: ${e.message}`))
     await page.setViewport({ width: c.width, height: c.height })
     await page.evaluateOnNewDocument(
-      (lang, theme) => {
+      (lang, theme, codeLang) => {
         localStorage.setItem('dpp-lang', lang)
         localStorage.setItem('dpp-theme', theme)
+        localStorage.setItem('dpp-code-lang', codeLang)
       },
       c.lang,
       c.theme,
+      c.codeLang,
     )
     await page.goto(`${base}/patterns/${id}`, { waitUntil: 'networkidle0' })
 
@@ -98,7 +112,12 @@ try {
       await page.close()
       continue
     }
-    await page.waitForSelector('.shiki-token', { timeout: 8000 }).catch(() => fail(combo, 'code was not syntax-highlighted'))
+    await page.waitForSelector('#code .shiki-token', { timeout: 8000 }).catch(() => fail(combo, 'code was not syntax-highlighted'))
+    await page
+      .waitForSelector('#compare .shiki-token', { timeout: 8000 })
+      .catch(() => fail(combo, 'Without vs With code was not syntax-highlighted'))
+    const pickedLang = await page.$$eval('#code [data-code-lang][aria-checked="true"]', (els) => els.map((e) => e.dataset.codeLang))
+    if (pickedLang[0] !== c.codeLang) fail(combo, `code language switch shows "${pickedLang[0]}", expected "${c.codeLang}"`)
     await page.waitForSelector('[data-player="step"]', { timeout: 8000 }).catch(() => {})
 
     const layout = await page.evaluate(() => ({
@@ -130,7 +149,7 @@ try {
         if (steps === 2) {
           await page.evaluate(() => window.scrollTo(0, document.getElementById('visual').offsetTop - 90))
           await wait(300)
-          await page.screenshot({ path: `${outDir}/${c.lang}-${c.theme}-${c.device}-visual.png` })
+          await page.screenshot({ path: `${outDir}/${shot}-visual.png` })
         }
       }
       if (steps === 0) fail(combo, 'the visualization has no steps')
@@ -141,7 +160,8 @@ try {
 
     if (c.device === 'desktop' && c.theme === 'light') {
       await page.evaluate(() => window.scrollTo(0, 0))
-      await page.screenshot({ path: `${outDir}/${c.lang}-full.png`, fullPage: true })
+      const full = c.codeLang === codeLangs[0] ? `${c.lang}-full` : `${c.lang}-full-${c.codeLang}`
+      await page.screenshot({ path: `${outDir}/${full}.png`, fullPage: true })
     }
     await page.close()
     console.log(`  checked ${combo}`)

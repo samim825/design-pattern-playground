@@ -32,13 +32,15 @@ Follow these steps in order.
      preset, a type or an option) and what then runs. Changing the choice must visibly
      change what happens. That's the "aha" moment.
    - **Step list:** an ordered list of step ids. Each id must match a
-     `// @step:<id>` marker in `code.main`, and each must have a caption in
-     `content.steps`.
+     `// @step:<id>` marker in `main` of **every** code language, and each must have a
+     caption in `content.steps`.
    - **Without vs With:** the messy alternative shows the real pain, e.g. a telescoping
      constructor, a giant if/else, duplicated code or tight coupling. The "with" side
      shows how easy the next change becomes.
-4. **Write the 5 files** in `src/patterns/<id>/` (see [anatomy](#anatomy-of-a-pattern-folder)):
-   - `code.ts` first, since it defines the step ids.
+4. **Write the files** in `src/patterns/<id>/` (see [anatomy](#anatomy-of-a-pattern-folder)):
+   - `code/ts.ts` first, since it defines the step ids. Then `code/java.ts` and
+     `code/csharp.ts` (same story, same step ids, idiomatic for that language), and
+     `code/index.ts`.
    - Then `content.en.ts` and `content.bn.ts`. Bangla is **complete and natural**, see
      the [bilingual rules](#bilingual-rules).
    - Then `Visual.tsx`, and finally `index.ts`.
@@ -55,7 +57,9 @@ Follow these steps in order.
    - console errors or warnings, including missing Bangla keys and missing code comments
    - a missing section, or code that isn't highlighted
    - horizontal scroll on mobile
-   - a step that highlights no code line, or has an empty caption
+   - a step that highlights no code line, or has an empty caption, in **any** code
+     language (TS, Java and C# are all walked; a language whose `@step` ids differ
+     from TypeScript logs a warning)
    - visible `{{placeholders}}`
 7. **Look at the screenshots** it writes to `.check/<id>/` (open the PNGs with the Read
    tool) and fix anything that looks broken or cramped:
@@ -79,8 +83,10 @@ Follow these steps in order.
       steps, where messages or objects visibly move between `<Node>`s.
 - [ ] Every step highlights the matching code line(s), and every caption explains *why*,
       not just *what*.
-- [ ] `code.main` is 30–60 lines of idiomatic TypeScript showing all pattern roles plus
-      a short client usage. `without` and `with` are each under about 30 lines.
+- [ ] Code exists in **TypeScript, Java and C#** (all required). Each `main` is 30–60
+      lines (C# Allman braces may run a little longer) of idiomatic code showing all
+      pattern roles plus a short client usage. `without` and `with` are each under
+      about 30 lines.
 - [ ] No hard-coded UI text in `Visual.tsx`: every label comes from `content.visual`.
 - [ ] `content.bn.ts` has **every** key, even when the value is the same English term.
 - [ ] Uses theme tokens and the shared `components/visual` blocks. Works at 360px and in dark mode.
@@ -104,7 +110,7 @@ React Router. Path alias `@/` → `src/`.
 ## Folder structure
 
 ```
-scripts/check-pattern.mjs    headless-Chrome check used in step 6 (screenshots → .check/<id>/, git-ignored)
+scripts/check-pattern.mjs    headless-Chrome check used in step 6 (all code languages; screenshots → .check/<id>/, git-ignored)
 src/
 ├── App.tsx                  routes: /  ·  /patterns/:id  ·  *
 ├── index.css                theme tokens (light + dark), utilities, fonts, background motif
@@ -114,10 +120,11 @@ src/
 ├── hooks/
 │   ├── useStepPlayer.ts     play / pause / step / reset / speed timeline for visuals
 │   ├── usePatternContent.ts current-language content, English fallback, dev warning for missing Bangla
-│   └── useTheme.ts          light/dark toggle (localStorage `dpp-theme`)
+│   ├── useTheme.ts          light/dark toggle (localStorage `dpp-theme`)
+│   └── useCodeLang.ts       TS / Java / C# choice shared by all code panels (localStorage `dpp-code-lang`)
 ├── lib/
-│   ├── code.ts              prepareCode(): fills {{comment}} placeholders, strips @step markers
-│   ├── highlighter.ts       Shiki core (TypeScript), loaded on demand
+│   ├── code.ts              prepareCode(): fills {{comment}} placeholders, strips @step markers; step-parity check
+│   ├── highlighter.ts       Shiki core; TS / Java / C# grammars loaded on demand
 │   ├── format.ts            formatNumber / formatTaka (Bangla digits in বাংলা mode)
 │   ├── template.ts          fill('Pay {{amount}}', values) for captions and labels
 │   └── merge.ts             English-fallback merge + findMissing()
@@ -126,6 +133,7 @@ src/
 │   ├── visual/index.tsx     shared visual blocks: Stage, Node, Connector, Packet, StatusDot, Caption
 │   ├── PatternPage.tsx      the 4-section page shell; every pattern renders through it
 │   ├── CodePanel.tsx        highlighted code + running-line highlight + auto-scroll
+│   ├── CodeLangTabs.tsx     the TS | Java | C# switch
 │   ├── ComparePanel.tsx     Without vs With
 │   ├── LanguageToggle.tsx, ThemeToggle.tsx, ErrorBoundary.tsx
 │   └── ui/                  Button, Section/Card/BarCard, StepControls, icons
@@ -147,10 +155,11 @@ them from the pattern's data, so a pattern can't skip or reorder them:
 2. **Interactive visualization**: `Visual.tsx`. The learner chooses something, presses
    Play or Step, and watches objects and messages animate, with a "What's happening"
    caption for each step.
-3. **Code panel**: `code.main`. The line that is currently "running" is highlighted in
-   sync with the visualization.
-4. **Without vs With**: `code.without` (the messy version) next to `code.with` (the
-   pattern version), followed by bullet points, "Why it's better" and "When to use".
+3. **Code panel**: `main`, with a `TS | Java | C#` switch above it. The line that is
+   currently "running" is highlighted in sync with the visualization, in every language.
+4. **Without vs With**: `without` (the messy version) next to `with` (the pattern
+   version) in the chosen language, followed by bullet points, "Why it's better" and
+   "When to use".
 
 ## Anatomy of a pattern folder
 
@@ -159,7 +168,11 @@ src/patterns/<id>/
 ├── index.ts        definePattern({ id, category, icon, content: { en, bn }, code, Visual: lazy(() => import('./Visual')) })
 ├── content.en.ts   export const en = { ... } satisfies PatternContent; export type XContent = typeof en
 ├── content.bn.ts   export const bn: DeepPartial<XContent> = { ... }   (typos in keys are type errors)
-├── code.ts         export const xCode: PatternCode = { main, without, with }   (TypeScript as strings)
+├── code/
+│   ├── index.ts    export const xCode: PatternCode = { ts, java, csharp }
+│   ├── ts.ts       export const ts: CodeSet = { main, without, with }   (code as strings)
+│   ├── java.ts     export const java: CodeSet = { ... }
+│   └── csharp.ts   export const csharp: CodeSet = { ... }
 └── Visual.tsx      export default function XVisual({ content, lang, onCodeStep }: VisualProps<XContent>)
 ```
 
@@ -175,19 +188,32 @@ src/patterns/<id>/
 | `scenario` | `{ title, paragraphs[2–3], problem }` |
 | `visual` | **Every** label `Visual.tsx` shows, as a flat object of strings. `{{name}}` placeholders are allowed |
 | `steps` | Caption per step id (plus `idle`, and any interaction captions like `set-strategy`) |
-| `codeComments` | Text for each `// {{key}}` in `code.ts` |
+| `codeComments` | Text for each `// {{key}}` in any `code/*.ts` (shared by all code languages) |
 | `compare` | `{ without: { title, points[4] }, with: { title, points[4] }, benefit, whenToUse[3] }` |
 
-### Code snippet conventions (`code.ts`)
+### Code snippet conventions (`code/*.ts`)
 
-- Code is TypeScript, written as template strings. Keep it idiomatic, compact and
-  self-explanatory. Helper calls like `verifyOtp(...)` may stay undeclared.
+- Every pattern ships the same example in **TypeScript, Java and C#** (`CODE_LANGS` in
+  `src/types/pattern.ts`). The learner picks one with the `TS | Java | C#` switch
+  (saved in localStorage as `dpp-code-lang`); it drives the code panel and Without vs With.
+- Write each language **idiomatically**, not as a line-by-line port: Java uses
+  `record`, `@Override`, `switch ->`; C# uses `IInterface` names, PascalCase methods,
+  `=>` members, Allman braces. Keep the class names and the story identical, so the
+  visual (which shows TS-style names) still matches.
+- Every language's `main` must use exactly the same `@step` ids as `ts.ts`.
+- Code is written as template strings. Keep it compact and self-explanatory. Helper
+  calls like `verifyOtp(...)` may stay undeclared.
 - `// {{key}}` is replaced by `content.codeComments[key]` in the current language. **All
   comments go through placeholders**, never as hard-coded English comments.
 - `// @step:a,b` at the **end** of a line lights that line up while visual step `a` or
   `b` runs. The marker is stripped before display. Several lines may share a step id.
 - Both can sit on one line: `const fee = amount * 0.01; // {{nagadFee}} // @step:nagad-fee`.
-- Avoid backticks inside the snippets, since they end the template string. Use `'…' + x`.
+- Avoid backticks and `${` inside the snippets, since they end or interpolate the
+  template string. Use `'…' + x` (TS) or `"…" + x` (Java, C#), not C# `$"{x}"`.
+- Comment keys are shared: all three languages reuse the same `codeComments` keys.
+- To add another language (Python, Go…): add it to `CODE_LANGS`, add its Shiki grammar
+  in `src/lib/highlighter.ts`, then write `code/<lang>.ts` for every built pattern.
+  Languages with `#` comments may use `# {{key}}` and `# @step:x`.
 
 ### Writing `Visual.tsx`
 
@@ -225,7 +251,7 @@ src/patterns/<id>/
 
 - Language toggle (EN | বাংলা) in the header, saved in localStorage as `dpp-lang`.
   `<html lang>` follows it, and the Bangla font is **Hind Siliguri**.
-- **Code stays in English.** Only code comments are translated, through `{{key}}`
+- **Code stays in English** in every code language. Only code comments are translated, through `{{key}}`
   placeholders. Code line numbers stay ASCII.
 - **Keep technical terms in English inside Bangla text**: "Builder প্যাটার্ন",
   "interface (ইন্টারফেস)", "class", "object", "runtime", "method", "delegate করে",

@@ -81,7 +81,8 @@
   },
   "code": {
     "copy": "Copy code",
-    "copied": "Copied!"
+    "copied": "Copied!",
+    "language": "Code language"
   },
   "comingSoon": {
     "title": "{{name}} is coming soon",

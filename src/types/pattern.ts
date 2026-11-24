@@ -46,19 +46,32 @@ export interface PatternContent {
   }
 }
 
+/**
+ * Programming languages the example code is shown in. Every pattern must provide
+ * a CodeSet for each of these. To add a language: add it here, add its Shiki
+ * grammar in lib/highlighter.ts, then write code/<id>.ts for every pattern.
+ */
+export const CODE_LANGS = [
+  { id: 'ts', label: 'TypeScript', short: 'TS' },
+  { id: 'java', label: 'Java', short: 'Java' },
+  { id: 'csharp', label: 'C#', short: 'C#' },
+] as const
+export type CodeLang = (typeof CODE_LANGS)[number]['id']
+
 export interface CodeSnippet {
-  /** Label shown above the code, e.g. "checkout.ts". */
+  /** Label shown above the code, e.g. "checkout.ts" or "Checkout.java". */
   filename: string
   /**
-   * TypeScript source. Conventions:
-   * - `// {{key}}` → replaced with `codeComments[key]` in the current language.
+   * Source code in the CodeSet's language. Conventions:
+   * - `// {{key}}` → replaced with `codeComments[key]` in the current UI language.
    * - `// @step:a,b` at the end of a line → that line lights up while visual step
    *   `a` or `b` is running. The marker is stripped before display.
    */
   source: string
 }
 
-export interface PatternCode {
+/** The three snippets of one pattern in one programming language. */
+export interface CodeSet {
   /** Section 3 — the code that is highlighted in sync with the Visual. */
   main: CodeSnippet
   /** Section 4 — the messy version. */
@@ -66,6 +79,9 @@ export interface PatternCode {
   /** Section 4 — the clean pattern version. */
   with: CodeSnippet
 }
+
+/** One CodeSet per programming language; every language uses the same @step ids. */
+export type PatternCode = Record<CodeLang, CodeSet>
 
 export interface VisualProps<C extends PatternContent = PatternContent> {
   content: C

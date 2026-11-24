@@ -1,10 +1,12 @@
-import { Suspense, useMemo, useState } from 'react'
+import { Suspense, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useCodeLang } from '@/hooks/useCodeLang'
 import { usePatternContent } from '@/hooks/usePatternContent'
 import { useLang } from '@/i18n'
-import { prepareCode } from '@/lib/code'
+import { checkStepParity, prepareCode } from '@/lib/code'
 import { formatNumber } from '@/lib/format'
 import type { PatternDefinition } from '@/types/pattern'
+import { CodeLangTabs } from './CodeLangTabs'
 import { CodePanel } from './CodePanel'
 import { ComparePanel } from './ComparePanel'
 import { BarCard, Card, Section } from './ui/Section'
@@ -18,7 +20,9 @@ export function PatternPage({ pattern }: { pattern: PatternDefinition }) {
   const lang = useLang()
   const content = usePatternContent(pattern)
   const [codeStep, setCodeStep] = useState<string | null>(null)
-  const { Visual, code } = pattern
+  const codeLang = useCodeLang()
+  const { Visual } = pattern
+  const code = pattern.code[codeLang]
 
   const prepared = useMemo(
     () => ({
@@ -28,6 +32,11 @@ export function PatternPage({ pattern }: { pattern: PatternDefinition }) {
     }),
     [code, content.codeComments],
   )
+
+  // Dev only: every language must light up the same visual steps.
+  useEffect(() => {
+    if (import.meta.env.DEV) checkStepParity(pattern.id, pattern.code)
+  }, [pattern])
 
   const activeLineIndex = codeStep === null ? -1 : prepared.main.lines.findIndex((l) => l.steps.includes(codeStep))
 
@@ -96,16 +105,19 @@ export function PatternPage({ pattern }: { pattern: PatternDefinition }) {
         </Section>
 
         <Section id="code" number={3} title={t('pattern.sections.code')}>
-          <div className="xl:sticky xl:top-24">
-            <CodePanel prepared={prepared.main} filename={code.main.filename} activeStep={codeStep} />
+          <div className="flex flex-col gap-3 xl:sticky xl:top-24">
+            <CodeLangTabs className="self-start" />
+            <CodePanel prepared={prepared.main} lang={codeLang} filename={code.main.filename} activeStep={codeStep} />
           </div>
         </Section>
       </div>
 
       {/* 4. Without vs With */}
       <Section id="compare" number={4} title={t('pattern.sections.compare')}>
+        <CodeLangTabs className="mb-4" />
         <ComparePanel
           compare={content.compare}
+          lang={codeLang}
           without={{ snippet: code.without, prepared: prepared.without }}
           withPattern={{ snippet: code.with, prepared: prepared.with }}
         />

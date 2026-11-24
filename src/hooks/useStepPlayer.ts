@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 
 export interface PlayerStep {
   id: string
-  /** Code step id (matches `// @step:<id>` in code.ts). Defaults to `id`. */
+  /** Code step id (matches `// @step:<id>` in code/*.ts). Defaults to `id`. */
   codeStep?: string
   /** How long this step stays on screen at 1× speed, in ms. */
   duration?: number

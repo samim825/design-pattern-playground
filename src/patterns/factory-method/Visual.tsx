@@ -91,7 +91,7 @@ interface VisualStep extends PlayerStep {
   kind: StepKind
 }
 
-/** Step ids double as code-step ids — they match the `// @step:` markers in code.ts. */
+/** Step ids double as code-step ids — they match the `// @step:` markers in code/*.ts. */
 function buildSteps(b: Branch): VisualStep[] {
   return [
     { id: 'client-send', kind: 'client-send' },
@@ -187,7 +187,7 @@ export default function FactoryMethodVisual({ content, lang, onCodeStep }: Visua
       <Stage>
         {/* ── Client ─────────────────────────────────────────── */}
         <Node role={v.clientRole} title={`📦 ${v.clientTitle}`} active={kind === 'client-send' || kind === 'done'} accent="#0b6b4f">
-          <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
+          <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
             <dl className="flex flex-col gap-1 text-sm">
               <div className="flex justify-between gap-2">
                 <dt>🥻 {v.parcel}</dt>

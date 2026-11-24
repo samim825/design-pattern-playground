@@ -2,24 +2,25 @@ import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { ThemedToken } from 'shiki/core'
 import type { PreparedCode } from '@/lib/code'
+import type { CodeLang } from '@/types/pattern'
 import { CheckIcon, CopyIcon } from './ui/icons'
 
-function useTokens(code: string): ThemedToken[][] | null {
-  const [result, setResult] = useState<{ code: string; tokens: ThemedToken[][] } | null>(null)
+function useTokens(code: string, lang: CodeLang): ThemedToken[][] | null {
+  const [result, setResult] = useState<{ code: string; lang: CodeLang; tokens: ThemedToken[][] } | null>(null)
   useEffect(() => {
     let alive = true
     // Shiki is loaded on demand so it stays out of the main bundle.
     import('@/lib/highlighter')
-      .then((m) => m.tokenize(code))
+      .then((m) => m.tokenize(code, lang))
       .then(
-      (tokens) => alive && setResult({ code, tokens }),
+      (tokens) => alive && setResult({ code, lang, tokens }),
       (err: unknown) => console.error('[CodePanel] highlighting failed', err),
     )
     return () => {
       alive = false
     }
-  }, [code])
-  return result?.code === code ? result.tokens : null
+  }, [code, lang])
+  return result?.code === code && result.lang === lang ? result.tokens : null
 }
 
 type Tone = 'neutral' | 'bad' | 'good'
@@ -35,19 +36,22 @@ const toneBar: Record<Tone, string> = {
  */
 export function CodePanel({
   prepared,
+  lang,
   filename,
   activeStep = null,
   tone = 'neutral',
   maxHeight = '32rem',
 }: {
   prepared: PreparedCode
+  /** Programming language of the code (drives syntax highlighting). */
+  lang: CodeLang
   filename: string
   activeStep?: string | null
   tone?: Tone
   maxHeight?: string
 }) {
   const { t } = useTranslation()
-  const tokens = useTokens(prepared.code)
+  const tokens = useTokens(prepared.code, lang)
   const scrollRef = useRef<HTMLDivElement>(null)
   const [copied, setCopied] = useState(false)
 

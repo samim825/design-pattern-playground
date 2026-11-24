@@ -1,4 +1,4 @@
-import type { PatternCode } from '@/types/pattern'
+import type { CodeSet } from '@/types/pattern'
 
 /*
  * Conventions (see CLAUDE.md):
@@ -100,7 +100,7 @@ class SylhetBranch extends CourierBranch {
 new SylhetBranch().sendParcel({ item: 'Tea', to: 'Srimangal' });
 `
 
-export const factoryMethodCode: PatternCode = {
+export const ts: CodeSet = {
   main: { filename: 'courier.ts', source: main },
   without: { filename: 'courier-without-factory-method.ts', source: without },
   with: { filename: 'courier-with-factory-method.ts', source: withPattern },
