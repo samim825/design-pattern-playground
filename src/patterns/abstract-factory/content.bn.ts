@@ -1,0 +1,200 @@
+import type { DeepPartial } from '@/types/pattern'
+import type { AbstractFactoryContent } from './content.en'
+
+// Technical terms stay in English (Abstract Factory, factory, class, interface…).
+// Anything missing here falls back to content.en.ts automatically.
+export const bn: DeepPartial<AbstractFactoryContent> = {
+  title: 'Abstract Factory',
+  tagline: 'পরস্পর সম্পর্কিত object-এর পুরো একটা family বানান, যেগুলো সবসময় মেলে; একটাও concrete class-এর নাম না নিয়ে।',
+  intent:
+    'সম্পর্কিত object-এর একটা family (একটা মেইন, একটা সাইড, একটা ডেজার্ট) বানানোর জন্য একটা interface দিন, কোন concrete class হবে সেটা না বলে। প্রতিটা concrete factory একটা সম্পূর্ণ, মানানসই family বানায়।',
+
+  scenario: {
+    title: 'ধানমন্ডির রেস্টুরেন্টে কম্বো মিল',
+    paragraphs: [
+      'মিতু ধানমন্ডিতে “রংধনু” নামে একটা ব্যস্ত রেস্টুরেন্ট চালায়, যার দুটো কিচেন। প্রতিটা কম্বো মানে একটা মেইন, একটা সাইড আর একটা ডেজার্ট, আর তিনটাই একই ধরনের খাবার হতে হবে।',
+      'দেশি কম্বো হলো কাচ্চি বিরিয়ানি, বোরহানি আর ফিরনি, ৳৪৫০। চাইনিজ কম্বো হলো চিকেন ফ্রাইড রাইস, কর্ন স্যুপ আর কাস্টার্ড পুডিং, ৳৫২০। কাচ্চির সাথে কর্ন স্যুপ? কাস্টমার সোজা ফেরত পাঠাবে।',
+      'সামনের মাসে মিতু একটা থাই কিচেনও খুলতে চায়: প্যাড থাই, টম ইয়াম স্যুপ আর ম্যাংগো স্টিকি রাইস। অর্ডার নেওয়ার কোড যেন একটুও বদলাতে না হয়।',
+    ],
+    problem:
+      'অর্ডারের কোড যদি প্রতিটা খাবার নাম ধরে বানায় (createDish("kacchi"), createDish("corn-soup")…), তাহলে তাকে সব খাবার চিনতে হয়, আর আলাদা family মিশিয়ে ফেলা থেকে কিছুই তাকে আটকায় না। প্রতিটা নতুন রান্নার ধরন মানে একই if/else-এ আরও নাম।',
+  },
+
+  visual: {
+    // Pattern-role and class names stay in English on purpose.
+    levelsLabel: 'গেমের লেভেল',
+    levelLabel: 'লেভেল {{n}}',
+    level1Title: 'নিজেই সাজান',
+    level2Title: 'একটা কিচেন বাছুন',
+    level3Title: 'থাই কিচেন খুলুন',
+    level1Goal: 'এখনো কোনো pattern নেই: client প্রতিটা খাবার নাম ধরে বাছে। প্রতিটা কম্বো সাজান একই ধরনের একটা মেইন, একটা সাইড আর একটা ডেজার্ট দিয়ে।',
+    level2Goal: 'এবার প্রতিটা কিচেন একটা factory, যে পুরো মানানসই কম্বো বানায়। প্রতিটা অর্ডার শুধু ঠিক কিচেনে পাঠান।',
+    level3Goal: 'রংধনুতে থাই খাবার আসছে। serveCombo() বা পুরনো কিচেন এডিট না করে নতুন কিচেনটা খুলুন।',
+    locked: 'লক করা',
+    earned: 'বিক্রি',
+    restart: 'গেম আবার শুরু',
+    customerOf: 'কাস্টমার {{n}}/{{total}}',
+
+    clientRole: 'Client',
+    counterTitle: 'কাউন্টারে',
+    wantsCombo: '{{cuisine}} কম্বো চায়',
+    pickDishes: 'একটা মেইন, একটা সাইড আর একটা ডেজার্ট বাছুন',
+    pickKitchen: 'অর্ডারটা একটা কিচেনে পাঠান',
+    noNames: 'serveCombo() কোনো খাবারের নাম জানে না',
+    noPatternRole: 'Pattern ছাড়া',
+    casesLabel: 'Client-কে যত খাবারের নাম জানতে হয়',
+    concreteFactoryRole: 'ConcreteFactory',
+    abstractFactoryTag: 'AbstractFactory',
+    implementsLabel: 'implements',
+    noKitchen: 'এখনো কোনো কিচেন বাছা হয়নি…',
+    productsRole: 'ConcreteProducts',
+    abstractProductTag: 'AbstractProduct',
+    trayTitle: 'কম্বো ট্রে',
+    emptyTray: 'খালি ট্রে',
+    served: 'পরিবেশিত',
+    sentBack: 'ফেরত',
+    mixedTag: 'মিশে গেছে!',
+    missingTag: 'নেই',
+    buildSlot: 'বানান',
+    newTag: 'নতুন',
+
+    deshi: 'দেশি',
+    chinese: 'চাইনিজ',
+    thai: 'থাই',
+    courseMain: 'মেইন',
+    courseSide: 'সাইড',
+    courseDessert: 'ডেজার্ট',
+    kacchi: 'কাচ্চি বিরিয়ানি',
+    borhani: 'বোরহানি',
+    firni: 'ফিরনি',
+    friedrice: 'চিকেন ফ্রাইড রাইস',
+    cornsoup: 'কর্ন স্যুপ',
+    pudding: 'কাস্টার্ড পুডিং',
+    padthai: 'প্যাড থাই',
+    tomyum: 'টম ইয়াম স্যুপ',
+    mango: 'ম্যাংগো স্টিকি রাইস',
+
+    builderTitle: 'থাই কিচেন খুলুন',
+    builderStep1: 'ধাপ ১ · কী যোগ করবেন?',
+    builderStep2: 'ধাপ ২ · আর serveCombo()?',
+    q1: 'থাই খাবারের জন্য কী লাগবে?',
+    q1NewFamily: 'ThaiKitchen + ৩টা থাই খাবার',
+    q1IfElse: 'createDish()-এ আরও case',
+    q1Flag: 'DeshiKitchen-এ একটা thai flag',
+    q2: 'serveCombo()-তে কী বদলাবে?',
+    q2Nothing: 'কিছুই না',
+    q2Case: 'একটা থাই case যোগ',
+    q2Method: 'createThaiMain() যোগ',
+    openKitchen: 'ThaiKitchen চালু করুন',
+    zeroEdits: 'serveCombo() আর পুরনো কিচেন এডিট: ০ লাইন',
+
+    serveButton: 'পরিবেশন',
+    nextCustomer: 'পরের কাস্টমার',
+    finishLevel: 'লেভেল শেষ করুন',
+    tryAgain: 'আবার চেষ্টা করুন',
+
+    levelDone: 'লেভেল {{n}} শেষ!',
+    nextLevel: 'পরের লেভেল',
+    replayLevel: 'এই লেভেল আবার খেলুন',
+    playAgain: 'লেভেল ১ থেকে আবার খেলুন',
+    l1Teaser:
+      'তারপর মিতু বলল: “সামনের মাসে আমরা থাই কিচেন খুলছি।” মানে createDish()-এ আরও তিনটা নাম, আর তবুও কাচ্চির পাশে টম ইয়াম চলে আসা ঠেকানোর কিছু নেই। নিশ্চয়ই এর চেয়ে ভালো উপায় আছে…',
+    l2Summary:
+      'আপনি একবারও কোনো খাবারের নাম নেননি। শুধু একটা কিচেন বেছেছেন, আর সেই একটা factory এমন মেইন, সাইড আর ডেজার্ট বানিয়েছে যেগুলো সবসময় মেলে।',
+    recapTitle: 'যা শিখলেন',
+    recap1: 'Pattern ছাড়া client প্রতিটা object নাম ধরে বানায়, আর family মানানসই রাখতে হয় হাতে হাতে।',
+    recap2: 'Abstract Factory-তে একটা factory পুরো family বানায়, তাই সম্পর্কিত object-গুলো সবসময় মেলে।',
+    recap3: 'নতুন family (থাই) মানে একটা নতুন factory আর তার product। Client-এর কোড কখনো বদলায় না।',
+
+    rahim: 'রহিম',
+    nusrat: 'নুসরাত',
+    karim: 'করিম',
+    mitu: 'মিতু',
+
+    whatsHappening: 'এখন কী ঘটছে',
+    priceNote: 'রংধনু আর এর দামগুলো শুধু উদাহরণের জন্য বানানো।',
+  },
+
+  steps: {
+    tutorial:
+      'নুসরাত দেশি কম্বো চায়। এবারের মতো কাচ্চি, বোরহানি আর ফিরনি আমরাই বেছে দিয়েছি। “পরিবেশন” চাপুন, আর দেখুন client কীভাবে নাম ধরে প্রতিটা খাবার বানায়।',
+    idle1: '{{name}} {{cuisine}} কম্বো চায়। একসাথে মানায় এমন একটা মেইন, একটা সাইড আর একটা ডেজার্টে ট্যাপ করে “পরিবেশন” চাপুন।',
+    picked1: 'তিনটা খাবার বাছা হয়েছে। কাস্টমার খুশি হয় কিনা দেখতে “পরিবেশন” চাপুন।',
+    'l1-order': 'Client তিনটা খাবারের নাম দিয়ে serveCombo() কল করছে। এগুলো যে একসাথে মানাতে হবে, কোড তা জানেই না।',
+    'l1-start': 'serveCombo() তিনটা আলগা নাম নিচ্ছে। এগুলোকে এক ধরনের রান্নায় বেঁধে রাখার কিছু নেই।',
+    'l1-dish-ok': "createDish('{{code}}') বানাল {{dish}}। {{cuisine}} কম্বোতে মানিয়েছে, তবে শুধু আপনি মনে রেখেছেন বলে।",
+    'l1-dish-mixed': "createDish('{{code}}') বানাল {{dish}}, যেটা {{dishCuisine}} খাবার, অথচ কম্বোটা {{cuisine}}। কোড দিব্যি সেটা হতে দিচ্ছে।",
+    'l1-dish-missing': 'ট্রেতে কোনো {{course}} নেই: আপনি অন্য একটা জিনিস দুটো নিয়েছেন, আর কেউ সাবধানও করেনি।',
+    'l1-ok': 'পরিবেশিত! +{{total}}। কাস্টমার খুশি, কিন্তু client-কে সব খাবার চিনতে হয়েছে, আর হাতে হাতে family মিলিয়ে রাখতে হয়েছে।',
+    'l1-mixed': '😖 ফেরত! {{dish}} {{cuisine}} কম্বোতে চলে না। serveCombo()-তে বেমানান family আটকানোর কিছুই নেই।',
+    'l1-missing': '😖 ফেরত! কম্বোতে একটা মেইন, একটা সাইড আর একটা ডেজার্ট লাগে, আর এই ট্রেতে কোনো {{course}} নেই।',
+    'level1-done': 'লেভেল শেষ! কোডের হাইলাইট করা লাইনটা দেখুন: প্রতিটা নতুন রান্নার ধরন মানে client-কে আরও খাবারের নাম জানতে আর মিলিয়ে রাখতে হবে।',
+
+    idle2: '{{name}} {{cuisine}} কম্বো চায়। অর্ডারটা ঠিক কিচেনে পাঠিয়ে “পরিবেশন” চাপুন।',
+    'wrong-kitchen': '{{name}} অর্ডার দিয়েছে {{cuisine}} কম্বো, {{picked}} নয়। মানানসই কিচেনটা বাছুন।',
+    ready: '{{kitchenClass}} বাছা হয়েছে। “পরিবেশন” চাপুন: একটা factory, একটা মানানসই family।',
+    order: 'Client কল করছে serveCombo(kitchen)। সে কোনো খাবারের নাম নেয় না: শুধু Kitchen interface চেনে।',
+    'create-main': 'kitchen.createMain(): concrete খাবার কোনটা হবে, {{kitchenClass}} ঠিক করে বানাল {{dish}}।',
+    'create-side': 'kitchen.createSide(): একই কিচেন বানাল {{dish}}, তাই মেইনের সাথে মেলে।',
+    'create-dessert': 'kitchen.createDessert(): {{dish}}। তিনটাই এক factory থেকে আসে, তাই মিশে যাওয়া অসম্ভব।',
+    serve: 'serveCombo() ট্রে ফেরত দিল: একটা মেইন, একটা সাইড আর একটা ডেজার্ট, সবই {{cuisine}}।',
+    done: 'পরিবেশিত! +{{total}}। Client একবার কিচেন বেছেছে; মানানসই খাবারগুলো আপনা থেকেই এসেছে।',
+    'level2-done': 'লেভেল শেষ! Client একবারও খাবারের নাম নেয়নি, তবু প্রতিটা কম্বো মিলেছে, কারণ প্রতিটা family একটা factory বানিয়েছে।',
+
+    'need-build': 'এখনো কোনো কিচেন থাই রান্না করে না। ThaiKitchen খুলতে “বানান”-এ ট্যাপ করুন।',
+    'build-q1': 'প্রথমে: থাই খাবারের জন্য কী যোগ করবেন?',
+    'wrong-ifelse': 'এটা তো পুরনো পদ্ধতি: createDish() আবার বড় হবে, আর থাই খাবারগুলো একসাথে রাখার কিছুই থাকবে না।',
+    'wrong-flag': 'Flag দিলে DeshiKitchen একসাথে দুটো কিচেন হয়ে যাবে, আর দেশি রান্নার প্রতিটা বদলে থাই ভেঙে যেতে পারে।',
+    'build-q2': 'ThaiKitchen আর তার তিনটা খাবার লেখা হয়ে গেছে। এবার: serveCombo()-তে কী বদলাবে?',
+    'wrong-case': 'কোনো case লাগবে না: serveCombo() শুধু Kitchen interface-এর সাথে কথা বলে, তাই যেকোনো নতুন কিচেন এমনিই চলে।',
+    'wrong-method': 'Kitchen-এ createMain() আগে থেকেই আছে, আর ThaiKitchen সেটা implement করে। নতুন method দিলে interface ভাগ হয়ে যাবে।',
+    'build-ready': 'হয়ে গেছে: একটা নতুন factory আর তার family, আর কিছুই এডিট হয়নি। “ThaiKitchen চালু করুন” চাপুন।',
+    'build-done': 'ThaiKitchen চালু, আর serveCombo()-তে হাতই পড়েনি। “পরিবেশন” চাপুন!',
+    'thai-order': 'Client কল করছে serveCombo(new ThaiKitchen()): আগের সেই একই ফাংশন।',
+    'thai-done': 'থাই পরিবেশিত! +{{total}}। serveCombo() আর অন্য কিচেনগুলো একটুও বদলায়নি।',
+    'level3-done': 'গেম শেষ! Abstract Factory মানানসই object-এর পুরো family বানায়, আর নতুন family মানে শুধু একটা নতুন factory।',
+  },
+
+  codeComments: {
+    abstractProducts: 'Abstract product: প্রতিটা কোর্সের জন্য একটা type',
+    concreteProducts: 'Concrete product: আসল খাবারগুলো',
+    abstractFactory: 'Abstract factory: একটা পুরো কম্বো family বানায়',
+    concreteFactories: 'Concrete factory: প্রতিটা কিচেন একটা মানানসই সেট বানায়',
+    client: 'Client: শুধু Kitchen আর abstract খাবারের type চেনে',
+    noNames: 'এখানে কোনো খাবারের নাম নেই!',
+    usage: 'Client কোড',
+    withoutIntro: 'Client প্রতিটা খাবার নাম ধরে বানায়',
+    withoutMix: 'Compile ঠিকই হয়, কিন্তু কাচ্চির সাথে কর্ন স্যুপ?!',
+    withoutTodo: 'সামনের মাসে থাই খাবার? এখানে আরও নাম, তবু কোনো সুরক্ষা নেই',
+    withAdd: 'নতুন family = একটা নতুন কিচেন + তার খাবার',
+    withSame: 'serveCombo() যেমন ছিল তেমনই কাজে লাগছে',
+  },
+
+  compare: {
+    without: {
+      title: 'Client প্রতিটা খাবার নাম ধরে বানায়',
+      points: [
+        'Client-কে প্রতিটা রান্নার প্রতিটা concrete খাবার চিনতে হয়।',
+        'বেমানান কম্বো, যেমন কাচ্চির সাথে কর্ন স্যুপ, আটকানোর কিছু নেই।',
+        'প্রতিটা নতুন রান্নার ধরনের সাথে createDish() বড় হতে থাকে।',
+        'একটা রান্নার ধরন বদলাতে হলে পুরো কোডে তার খাবারের নাম খুঁজে বেড়াতে হয়।',
+      ],
+    },
+    with: {
+      title: 'প্রতিটা রান্নার ধরনের জন্য একটা কিচেন (factory)',
+      points: [
+        'Client শুধু Kitchen আর abstract খাবারের type চেনে।',
+        'প্রতিটা কিচেন পুরো family বানায়, তাই কম্বো সবসময় মেলে।',
+        'নতুন রান্নার ধরন মানে একটা নতুন factory আর তার খাবার।',
+        'পুরো family বদলানো মানে একটাই বদল: অন্য একটা কিচেন পাঠানো।',
+      ],
+    },
+    benefit:
+      'Abstract Factory সম্পর্কিত object-গুলোকে মানানসই রাখে। "কোন family?" সিদ্ধান্তটা হয় একবারই, factory বাছার সময়, আর সে যা বানায় সবই সেই family-র। নতুন family যোগ হলেও client বদলানোর জন্য বন্ধ থাকে।',
+    whenToUse: [
+      'কোড এমন কয়েকটা সম্পর্কিত object বানায় যেগুলো একসাথে ব্যবহার হতে হবে (একটা theme-এর UI widget, একটা platform-এর অংশ, এক ধরনের রান্নার খাবার)।',
+      'পুরো family একবারে বদলাতে চান (light বনাম dark theme, test বনাম production service)।',
+      'যে object ব্যবহার করে, client যেন তাদের concrete class-এর ওপর নির্ভর না করে।',
+    ],
+  },
+}
