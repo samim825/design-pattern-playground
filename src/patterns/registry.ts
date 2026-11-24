@@ -1,5 +1,6 @@
 import type { Category, PatternDefinition } from '@/types/pattern'
 import { catalog } from './catalog'
+import { factoryMethod } from './factory-method'
 import { strategy } from './strategy'
 
 /**
@@ -7,6 +8,7 @@ import { strategy } from './strategy'
  * then import it above and add it to this list.
  */
 export const patterns: PatternDefinition[] = [
+  factoryMethod,
   strategy,
 ]
 
