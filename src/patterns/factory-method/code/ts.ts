@@ -65,39 +65,39 @@ const booking = branch.sendParcel({ item: 'Saree', to: destination }); // @step:
 
 const without = `
 // {{withoutIntro}}
-function sendParcel(parcel: Parcel, city: string): Booking {
+function sendParcel(parcel: Parcel, city: string): Booking { // @step:l1-start
   let transport;
 
-  if (city === 'dhaka') {
-    transport = new RickshawVan();
+  if (city === 'dhaka') { // @step:l1-switch
+    transport = new RickshawVan(); // @step:l1-new-van
   } else if (city === 'chattogram') {
-    transport = new Truck();
+    transport = new Truck(); // @step:l1-new-truck
   } else if (city === 'barishal') {
-    transport = new Launch();
+    transport = new Launch(); // @step:l1-new-launch
   } else {
     throw new Error('No transport for ' + city);
   }
-  // {{withoutTodo}}
+  // {{withoutTodo}} // @step:l1-todo
 
   const tracking = newTrackingId();
-  const eta = transport.deliver(parcel.to);
-  return { tracking, fee: transport.fee, eta };
+  const eta = transport.deliver(parcel.to); // @step:l1-deliver
+  return { tracking, fee: transport.fee, eta }; // @step:l1-result
 }
 `
 
 const withPattern = `
 // {{withAdd}}
-class Drone implements Transport {
+class Drone implements Transport { // @step:build-product
   readonly fee = 200;
-  deliver(to: string) { return 'Flying over the hills to ' + to; }
+  deliver(to: string) { return 'Flying over the hills to ' + to; } // @step:sylhet-deliver
 }
 
-class SylhetBranch extends CourierBranch {
-  protected createTransport() { return new Drone(); }
+class SylhetBranch extends CourierBranch { // @step:build-creator
+  protected createTransport() { return new Drone(); } // @step:build-creator,sylhet-create
 }
 
 // {{withSame}}
-new SylhetBranch().sendParcel({ item: 'Tea', to: 'Srimangal' });
+new SylhetBranch().sendParcel({ item: 'Tea', to: 'Srimangal' }); // @step:sylhet-send,sylhet-done
 `
 
 export const ts: CodeSet = {

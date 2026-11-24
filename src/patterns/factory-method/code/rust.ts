@@ -68,36 +68,36 @@ let booking = branch.send_parcel(&Parcel { item: "Saree".into(), to: destination
 
 const without = `
 // {{withoutIntro}}
-fn send_parcel(parcel: &Parcel, city: &str) -> Result<Booking, String> {
-    let transport: Box<dyn Transport> = match city {
-        "dhaka" => Box::new(RickshawVan),
-        "chattogram" => Box::new(Truck),
-        "barishal" => Box::new(Launch),
+fn send_parcel(parcel: &Parcel, city: &str) -> Result<Booking, String> { // @step:l1-start
+    let transport: Box<dyn Transport> = match city { // @step:l1-switch
+        "dhaka" => Box::new(RickshawVan), // @step:l1-new-van
+        "chattogram" => Box::new(Truck), // @step:l1-new-truck
+        "barishal" => Box::new(Launch), // @step:l1-new-launch
         other => return Err(format!("No transport for {other}")),
     };
-    // {{withoutTodo}}
+    // {{withoutTodo}} // @step:l1-todo
 
     let tracking = new_tracking_id();
-    let eta = transport.deliver(&parcel.to);
-    Ok(Booking { tracking, fee: transport.fee(), eta })
+    let eta = transport.deliver(&parcel.to); // @step:l1-deliver
+    Ok(Booking { tracking, fee: transport.fee(), eta }) // @step:l1-result
 }
 `
 
 const withPattern = `
 // {{withAdd}}
-pub struct Drone;
+pub struct Drone; // @step:build-product
 impl Transport for Drone {
     fn fee(&self) -> u32 { 200 }
-    fn deliver(&self, to: &str) -> String { format!("Flying over the hills to {to}") }
+    fn deliver(&self, to: &str) -> String { format!("Flying over the hills to {to}") } // @step:sylhet-deliver
 }
 
-pub struct SylhetBranch;
+pub struct SylhetBranch; // @step:build-creator
 impl CourierBranch for SylhetBranch {
-    fn create_transport(&self) -> Box<dyn Transport> { Box::new(Drone) }
+    fn create_transport(&self) -> Box<dyn Transport> { Box::new(Drone) } // @step:build-creator,sylhet-create
 }
 
 // {{withSame}}
-SylhetBranch.send_parcel(&Parcel { item: "Tea".into(), to: "Srimangal".into() });
+SylhetBranch.send_parcel(&Parcel { item: "Tea".into(), to: "Srimangal".into() }); // @step:sylhet-send,sylhet-done
 `
 
 export const rust: CodeSet = {

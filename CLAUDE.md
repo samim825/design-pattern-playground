@@ -311,6 +311,10 @@ Avoid `{{` in code (Python f-strings, Rust `format!`): it looks like a placehold
   ```
   To highlight code for an interaction that happens before Play (like Strategy's
   `set-strategy`), report that step id while idle. See `strategy/Visual.tsx`.
+- Optional: a visual can switch the code panel to another snippet with
+  `onCodeView('without' | 'with' | 'main')`, e.g. while a game level plays the
+  no-pattern version. Put `@step` markers in that snippet too (in every language), and
+  switch back to `'main'` on unmount. See `factory-method/Visual.tsx` (a 3-level game).
 - When the learner changes their choice, call `player.reset()`.
 - Captions come from `fill(content.steps[key], values)`. Format numbers and money with
   `formatNumber` / `formatTaka(n, lang)` so বাংলা shows Bangla digits.

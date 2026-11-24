@@ -93,11 +93,19 @@ export interface CodeSet {
 /** One CodeSet per programming language; every language uses the same @step ids. */
 export type PatternCode = Record<RequiredCodeLang, CodeSet> & Partial<Record<CodeLang, CodeSet>>
 
+/** Which snippet of the CodeSet the code panel (section 3) shows. */
+export type CodeView = keyof CodeSet
+
 export interface VisualProps<C extends PatternContent = PatternContent> {
   content: C
   lang: Lang
   /** Report which code step is "running" (null = nothing). Drives the code highlight. */
   onCodeStep: (codeStep: string | null) => void
+  /**
+   * Optional: switch the code panel to another snippet, e.g. 'without' while a game
+   * level plays the no-pattern version. Defaults to 'main'.
+   */
+  onCodeView?: (view: CodeView) => void
 }
 
 export interface PatternDefinition<C extends PatternContent = PatternContent> {

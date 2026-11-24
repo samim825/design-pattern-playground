@@ -5,7 +5,7 @@ import { usePatternContent } from '@/hooks/usePatternContent'
 import { useLang } from '@/i18n'
 import { checkStepParity, prepareCode } from '@/lib/code'
 import { formatNumber } from '@/lib/format'
-import { CODE_LANGS, type PatternDefinition } from '@/types/pattern'
+import { CODE_LANGS, type CodeView, type PatternDefinition } from '@/types/pattern'
 import { CodeLangTabs } from './CodeLangTabs'
 import { CodePanel } from './CodePanel'
 import { ComparePanel } from './ComparePanel'
@@ -20,6 +20,7 @@ export function PatternPage({ pattern }: { pattern: PatternDefinition }) {
   const lang = useLang()
   const content = usePatternContent(pattern)
   const [codeStep, setCodeStep] = useState<string | null>(null)
+  const [codeView, setCodeView] = useState<CodeView>('main')
   const savedCodeLang = useCodeLang()
   const { Visual } = pattern
   const availableLangs = useMemo(() => CODE_LANGS.map((l) => l.id).filter((id) => pattern.code[id]), [pattern])
@@ -41,7 +42,8 @@ export function PatternPage({ pattern }: { pattern: PatternDefinition }) {
     if (import.meta.env.DEV) checkStepParity(pattern.id, pattern.code)
   }, [pattern])
 
-  const activeLineIndex = codeStep === null ? -1 : prepared.main.lines.findIndex((l) => l.steps.includes(codeStep))
+  const shown = prepared[codeView]
+  const activeLineIndex = codeStep === null ? -1 : shown.lines.findIndex((l) => l.steps.includes(codeStep))
 
   return (
     <article className="mx-auto flex max-w-7xl flex-col gap-12 px-4 py-8 lg:px-8 lg:py-10">
@@ -92,7 +94,7 @@ export function PatternPage({ pattern }: { pattern: PatternDefinition }) {
           <Suspense
             fallback={<Card className="grid h-96 place-items-center text-sm text-ink-soft">{t('pattern.loadingVisual')}</Card>}
           >
-            <Visual content={content} lang={lang} onCodeStep={setCodeStep} />
+            <Visual content={content} lang={lang} onCodeStep={setCodeStep} onCodeView={setCodeView} />
           </Suspense>
           {/* On narrow screens the code panel is below — show the running line here too. */}
           {activeLineIndex >= 0 && (
@@ -101,7 +103,7 @@ export function PatternPage({ pattern }: { pattern: PatternDefinition }) {
                 {t('pattern.runningLine', { line: formatNumber(activeLineIndex + 1, lang) })}
               </span>
               <code lang="en" className="truncate font-mono text-xs text-[#e6edf3]">
-                {prepared.main.lines[activeLineIndex].text.trim()}
+                {shown.lines[activeLineIndex].text.trim()}
               </code>
             </div>
           )}
@@ -110,7 +112,22 @@ export function PatternPage({ pattern }: { pattern: PatternDefinition }) {
         <Section id="code" number={3} title={t('pattern.sections.code')}>
           <div className="flex flex-col gap-3 xl:sticky xl:top-24">
             <CodeLangTabs available={availableLangs} current={codeLang} className="self-start" />
-            <CodePanel prepared={prepared.main} lang={codeLang} filename={code.main.filename} activeStep={codeStep} />
+            {codeView !== 'main' && (
+              <p
+                className={`rounded-lg border-2 border-edge px-3 py-1.5 text-xs font-bold shadow-hard-sm ${
+                  codeView === 'without' ? 'bg-chili text-cream' : 'bg-bottle text-cream'
+                }`}
+              >
+                {t(`code.view.${codeView}`)}
+              </p>
+            )}
+            <CodePanel
+              prepared={shown}
+              lang={codeLang}
+              filename={code[codeView].filename}
+              activeStep={codeStep}
+              tone={codeView === 'without' ? 'bad' : codeView === 'with' ? 'good' : 'neutral'}
+            />
           </div>
         </Section>
       </div>

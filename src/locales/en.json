@@ -82,7 +82,11 @@
   "code": {
     "copy": "Copy code",
     "copied": "Copied!",
-    "language": "Code language"
+    "language": "Code language",
+    "view": {
+      "without": "You are playing the version WITHOUT the pattern: this is the code your dispatcher runs",
+      "with": "New code you are adding: nothing above it was edited"
+    }
   },
   "comingSoon": {
     "title": "{{name}} is coming soon",

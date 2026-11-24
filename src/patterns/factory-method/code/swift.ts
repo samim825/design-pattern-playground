@@ -64,36 +64,36 @@ let booking = branch.sendParcel(Parcel(item: "Saree", to: destination)) // @step
 
 const without = `
 // {{withoutIntro}}
-func sendParcel(_ parcel: Parcel, city: String) throws -> Booking {
+func sendParcel(_ parcel: Parcel, city: String) throws -> Booking { // @step:l1-start
     let transport: any Transport
 
-    switch city {
-    case "dhaka": transport = RickshawVan()
-    case "chattogram": transport = Truck()
-    case "barishal": transport = Launch()
+    switch city { // @step:l1-switch
+    case "dhaka": transport = RickshawVan() // @step:l1-new-van
+    case "chattogram": transport = Truck() // @step:l1-new-truck
+    case "barishal": transport = Launch() // @step:l1-new-launch
     default: throw CourierError.noTransport(city)
     }
-    // {{withoutTodo}}
+    // {{withoutTodo}} // @step:l1-todo
 
     let tracking = newTrackingID()
-    let eta = transport.deliver(to: parcel.to)
-    return Booking(tracking: tracking, fee: transport.fee, eta: eta)
+    let eta = transport.deliver(to: parcel.to) // @step:l1-deliver
+    return Booking(tracking: tracking, fee: transport.fee, eta: eta) // @step:l1-result
 }
 `
 
 const withPattern = `
 // {{withAdd}}
-struct Drone: Transport {
+struct Drone: Transport { // @step:build-product
     let fee = 200
-    func deliver(to: String) -> String { "Flying over the hills to " + to }
+    func deliver(to: String) -> String { "Flying over the hills to " + to } // @step:sylhet-deliver
 }
 
-struct SylhetBranch: CourierBranch {
-    func createTransport() -> any Transport { Drone() }
+struct SylhetBranch: CourierBranch { // @step:build-creator
+    func createTransport() -> any Transport { Drone() } // @step:build-creator,sylhet-create
 }
 
 // {{withSame}}
-SylhetBranch().sendParcel(Parcel(item: "Tea", to: "Srimangal"))
+SylhetBranch().sendParcel(Parcel(item: "Tea", to: "Srimangal")) // @step:sylhet-send,sylhet-done
 `
 
 export const swift: CodeSet = {

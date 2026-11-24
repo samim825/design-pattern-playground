@@ -72,35 +72,35 @@ booking = branch.send_parcel(Parcel("Saree", destination))  # @step:client-send,
 
 const without = `
 # {{withoutIntro}}
-def send_parcel(parcel: Parcel, city: str) -> Booking:
-    if city == "dhaka":
-        transport = RickshawVan()
+def send_parcel(parcel: Parcel, city: str) -> Booking:  # @step:l1-start
+    if city == "dhaka":  # @step:l1-switch
+        transport = RickshawVan()  # @step:l1-new-van
     elif city == "chattogram":
-        transport = Truck()
+        transport = Truck()  # @step:l1-new-truck
     elif city == "barishal":
-        transport = Launch()
+        transport = Launch()  # @step:l1-new-launch
     else:
         raise ValueError("No transport for " + city)
-    # {{withoutTodo}}
+    # {{withoutTodo}}  # @step:l1-todo
 
     tracking = new_tracking_id()
-    eta = transport.deliver(parcel.to)
-    return Booking(tracking, transport.fee, eta)
+    eta = transport.deliver(parcel.to)  # @step:l1-deliver
+    return Booking(tracking, transport.fee, eta)  # @step:l1-result
 `
 
 const withPattern = `
 # {{withAdd}}
-class Drone(Transport):
+class Drone(Transport):  # @step:build-product
     fee = 200
     def deliver(self, to: str) -> str:
-        return f"Flying over the hills to {to}"
+        return f"Flying over the hills to {to}"  # @step:sylhet-deliver
 
-class SylhetBranch(CourierBranch):
+class SylhetBranch(CourierBranch):  # @step:build-creator
     def create_transport(self) -> Transport:
-        return Drone()
+        return Drone()  # @step:build-creator,sylhet-create
 
 # {{withSame}}
-SylhetBranch().send_parcel(Parcel("Tea", "Srimangal"))
+SylhetBranch().send_parcel(Parcel("Tea", "Srimangal"))  # @step:sylhet-send,sylhet-done
 `
 
 export const python: CodeSet = {

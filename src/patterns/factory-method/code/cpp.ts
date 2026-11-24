@@ -70,40 +70,40 @@ Booking booking = branch.sendParcel({"Saree", destination}); // @step:client-sen
 
 const without = `
 // {{withoutIntro}}
-Booking sendParcel(const Parcel& parcel, const std::string& city) {
+Booking sendParcel(const Parcel& parcel, const std::string& city) { // @step:l1-start
     std::unique_ptr<Transport> transport;
 
-    if (city == "dhaka") {
-        transport = std::make_unique<RickshawVan>();
+    if (city == "dhaka") { // @step:l1-switch
+        transport = std::make_unique<RickshawVan>(); // @step:l1-new-van
     } else if (city == "chattogram") {
-        transport = std::make_unique<Truck>();
+        transport = std::make_unique<Truck>(); // @step:l1-new-truck
     } else if (city == "barishal") {
-        transport = std::make_unique<Launch>();
+        transport = std::make_unique<Launch>(); // @step:l1-new-launch
     } else {
         throw std::invalid_argument("No transport for " + city);
     }
-    // {{withoutTodo}}
+    // {{withoutTodo}} // @step:l1-todo
 
     auto tracking = newTrackingId();
-    auto eta = transport->deliver(parcel.to);
-    return {tracking, transport->fee(), eta};
+    auto eta = transport->deliver(parcel.to); // @step:l1-deliver
+    return {tracking, transport->fee(), eta}; // @step:l1-result
 }
 `
 
 const withPattern = `
 // {{withAdd}}
-class Drone : public Transport {
+class Drone : public Transport { // @step:build-product
 public:
     int fee() const override { return 200; }
-    std::string deliver(const std::string& to) const override { return "Flying over the hills to " + to; }
+    std::string deliver(const std::string& to) const override { return "Flying over the hills to " + to; } // @step:sylhet-deliver
 };
 
-class SylhetBranch : public CourierBranch {
-    std::unique_ptr<Transport> createTransport() const override { return std::make_unique<Drone>(); }
+class SylhetBranch : public CourierBranch { // @step:build-creator
+    std::unique_ptr<Transport> createTransport() const override { return std::make_unique<Drone>(); } // @step:build-creator,sylhet-create
 };
 
 // {{withSame}}
-SylhetBranch().sendParcel({"Tea", "Srimangal"});
+SylhetBranch().sendParcel({"Tea", "Srimangal"}); // @step:sylhet-send,sylhet-done
 `
 
 export const cpp: CodeSet = {

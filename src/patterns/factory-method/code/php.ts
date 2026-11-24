@@ -82,19 +82,19 @@ const without = `
 <?php
 
 // {{withoutIntro}}
-function sendParcel(Parcel $parcel, string $city): Booking
+function sendParcel(Parcel $parcel, string $city): Booking // @step:l1-start
 {
-    $transport = match ($city) {
-        'dhaka' => new RickshawVan(),
-        'chattogram' => new Truck(),
-        'barishal' => new Launch(),
+    $transport = match ($city) { // @step:l1-switch
+        'dhaka' => new RickshawVan(), // @step:l1-new-van
+        'chattogram' => new Truck(), // @step:l1-new-truck
+        'barishal' => new Launch(), // @step:l1-new-launch
         default => throw new InvalidArgumentException('No transport for ' . $city),
     };
-    // {{withoutTodo}}
+    // {{withoutTodo}} // @step:l1-todo
 
     $tracking = newTrackingId();
-    $eta = $transport->deliver($parcel->to);
-    return new Booking($tracking, $transport->fee(), $eta);
+    $eta = $transport->deliver($parcel->to); // @step:l1-deliver
+    return new Booking($tracking, $transport->fee(), $eta); // @step:l1-result
 }
 `
 
@@ -102,19 +102,19 @@ const withPattern = `
 <?php
 
 // {{withAdd}}
-class Drone implements Transport
+class Drone implements Transport // @step:build-product
 {
     public function fee(): int { return 200; }
-    public function deliver(string $to): string { return 'Flying over the hills to ' . $to; }
+    public function deliver(string $to): string { return 'Flying over the hills to ' . $to; } // @step:sylhet-deliver
 }
 
-class SylhetBranch extends CourierBranch
+class SylhetBranch extends CourierBranch // @step:build-creator
 {
-    protected function createTransport(): Transport { return new Drone(); }
+    protected function createTransport(): Transport { return new Drone(); } // @step:build-creator,sylhet-create
 }
 
 // {{withSame}}
-(new SylhetBranch())->sendParcel(new Parcel('Tea', 'Srimangal'));
+(new SylhetBranch())->sendParcel(new Parcel('Tea', 'Srimangal')); // @step:sylhet-send,sylhet-done
 `
 
 export const php: CodeSet = {

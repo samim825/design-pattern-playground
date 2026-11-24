@@ -70,38 +70,38 @@ var booking = branch.SendParcel(new Parcel("Saree", destination)); // @step:clie
 
 const without = `
 // {{withoutIntro}}
-Booking SendParcel(Parcel parcel, string city)
+Booking SendParcel(Parcel parcel, string city) // @step:l1-start
 {
-    ITransport transport = city switch
+    ITransport transport = city switch // @step:l1-switch
     {
-        "dhaka" => new RickshawVan(),
-        "chattogram" => new Truck(),
-        "barishal" => new Launch(),
+        "dhaka" => new RickshawVan(), // @step:l1-new-van
+        "chattogram" => new Truck(), // @step:l1-new-truck
+        "barishal" => new Launch(), // @step:l1-new-launch
         _ => throw new ArgumentException("No transport for " + city),
     };
-    // {{withoutTodo}}
+    // {{withoutTodo}} // @step:l1-todo
 
     var tracking = NewTrackingId();
-    var eta = transport.Deliver(parcel.To);
-    return new Booking(tracking, transport.Fee, eta);
+    var eta = transport.Deliver(parcel.To); // @step:l1-deliver
+    return new Booking(tracking, transport.Fee, eta); // @step:l1-result
 }
 `
 
 const withPattern = `
 // {{withAdd}}
-class Drone : ITransport
+class Drone : ITransport // @step:build-product
 {
     public int Fee => 200;
-    public string Deliver(string to) => "Flying over the hills to " + to;
+    public string Deliver(string to) => "Flying over the hills to " + to; // @step:sylhet-deliver
 }
 
-class SylhetBranch : CourierBranch
+class SylhetBranch : CourierBranch // @step:build-creator
 {
-    protected override ITransport CreateTransport() => new Drone();
+    protected override ITransport CreateTransport() => new Drone(); // @step:build-creator,sylhet-create
 }
 
 // {{withSame}}
-new SylhetBranch().SendParcel(new Parcel("Tea", "Srimangal"));
+new SylhetBranch().SendParcel(new Parcel("Tea", "Srimangal")); // @step:sylhet-send,sylhet-done
 `
 
 export const csharp: CodeSet = {

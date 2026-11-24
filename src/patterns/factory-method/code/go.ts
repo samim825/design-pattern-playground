@@ -66,40 +66,40 @@ booking := branch.SendParcel(Parcel{"Saree", destination}) // @step:client-send,
 
 const without = `
 // {{withoutIntro}}
-func SendParcel(p Parcel, city string) (Booking, error) {
+func SendParcel(p Parcel, city string) (Booking, error) { // @step:l1-start
     var transport Transport
 
-    switch city {
+    switch city { // @step:l1-switch
     case "dhaka":
-        transport = RickshawVan{}
+        transport = RickshawVan{} // @step:l1-new-van
     case "chattogram":
-        transport = Truck{}
+        transport = Truck{} // @step:l1-new-truck
     case "barishal":
-        transport = Launch{}
+        transport = Launch{} // @step:l1-new-launch
     default:
         return Booking{}, errors.New("no transport for " + city)
     }
-    // {{withoutTodo}}
+    // {{withoutTodo}} // @step:l1-todo
 
     tracking := newTrackingID()
-    eta := transport.Deliver(p.To)
-    return Booking{tracking, transport.Fee(), eta}, nil
+    eta := transport.Deliver(p.To) // @step:l1-deliver
+    return Booking{tracking, transport.Fee(), eta}, nil // @step:l1-result
 }
 `
 
 const withPattern = `
 // {{withAdd}}
-type Drone struct{}
+type Drone struct{} // @step:build-product
 
 func (Drone) Fee() int { return 200 }
-func (Drone) Deliver(to string) string { return "Flying over the hills to " + to }
+func (Drone) Deliver(to string) string { return "Flying over the hills to " + to } // @step:sylhet-deliver
 
-var SylhetBranch = CourierBranch{
-    createTransport: func() Transport { return Drone{} },
+var SylhetBranch = CourierBranch{ // @step:build-creator
+    createTransport: func() Transport { return Drone{} }, // @step:build-creator,sylhet-create
 }
 
 // {{withSame}}
-SylhetBranch.SendParcel(Parcel{"Tea", "Srimangal"})
+SylhetBranch.SendParcel(Parcel{"Tea", "Srimangal"}) // @step:sylhet-send,sylhet-done
 `
 
 export const go: CodeSet = {

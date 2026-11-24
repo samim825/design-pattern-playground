@@ -61,34 +61,34 @@ Booking booking = branch.sendParcel(new Parcel("Saree", destination)); // @step:
 
 const without = `
 // {{withoutIntro}}
-Booking sendParcel(Parcel parcel, String city) {
-    Transport transport = switch (city) {
-        case "dhaka" -> new RickshawVan();
-        case "chattogram" -> new Truck();
-        case "barishal" -> new Launch();
+Booking sendParcel(Parcel parcel, String city) { // @step:l1-start
+    Transport transport = switch (city) { // @step:l1-switch
+        case "dhaka" -> new RickshawVan(); // @step:l1-new-van
+        case "chattogram" -> new Truck(); // @step:l1-new-truck
+        case "barishal" -> new Launch(); // @step:l1-new-launch
         default -> throw new IllegalArgumentException("No transport for " + city);
     };
-    // {{withoutTodo}}
+    // {{withoutTodo}} // @step:l1-todo
 
     String tracking = newTrackingId();
-    String eta = transport.deliver(parcel.to());
-    return new Booking(tracking, transport.fee(), eta);
+    String eta = transport.deliver(parcel.to()); // @step:l1-deliver
+    return new Booking(tracking, transport.fee(), eta); // @step:l1-result
 }
 `
 
 const withPattern = `
 // {{withAdd}}
-class Drone implements Transport {
+class Drone implements Transport { // @step:build-product
     public int fee() { return 200; }
-    public String deliver(String to) { return "Flying over the hills to " + to; }
+    public String deliver(String to) { return "Flying over the hills to " + to; } // @step:sylhet-deliver
 }
 
-class SylhetBranch extends CourierBranch {
-    @Override protected Transport createTransport() { return new Drone(); }
+class SylhetBranch extends CourierBranch { // @step:build-creator
+    @Override protected Transport createTransport() { return new Drone(); } // @step:build-creator,sylhet-create
 }
 
 // {{withSame}}
-new SylhetBranch().sendParcel(new Parcel("Tea", "Srimangal"));
+new SylhetBranch().sendParcel(new Parcel("Tea", "Srimangal")); // @step:sylhet-send,sylhet-done
 `
 
 export const java: CodeSet = {

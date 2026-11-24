@@ -63,35 +63,35 @@ booking = branch.send_parcel(Parcel.new(item: "Saree", to: destination)) # @step
 
 const without = `
 # {{withoutIntro}}
-def send_parcel(parcel, city)
+def send_parcel(parcel, city) # @step:l1-start
   transport =
-    case city
-    when "dhaka" then RickshawVan.new
-    when "chattogram" then Truck.new
-    when "barishal" then Launch.new
+    case city # @step:l1-switch
+    when "dhaka" then RickshawVan.new # @step:l1-new-van
+    when "chattogram" then Truck.new # @step:l1-new-truck
+    when "barishal" then Launch.new # @step:l1-new-launch
     else raise ArgumentError, "No transport for #{city}"
     end
-  # {{withoutTodo}}
+  # {{withoutTodo}} # @step:l1-todo
 
   tracking = new_tracking_id
-  eta = transport.deliver(parcel.to)
-  Booking.new(tracking:, fee: transport.fee, eta:)
+  eta = transport.deliver(parcel.to) # @step:l1-deliver
+  Booking.new(tracking:, fee: transport.fee, eta:) # @step:l1-result
 end
 `
 
 const withPattern = `
 # {{withAdd}}
-class Drone < Transport
+class Drone < Transport # @step:build-product
   def fee = 200
-  def deliver(to) = "Flying over the hills to #{to}"
+  def deliver(to) = "Flying over the hills to #{to}" # @step:sylhet-deliver
 end
 
-class SylhetBranch < CourierBranch
-  private def create_transport = Drone.new
+class SylhetBranch < CourierBranch # @step:build-creator
+  private def create_transport = Drone.new # @step:build-creator,sylhet-create
 end
 
 # {{withSame}}
-SylhetBranch.new.send_parcel(Parcel.new(item: "Tea", to: "Srimangal"))
+SylhetBranch.new.send_parcel(Parcel.new(item: "Tea", to: "Srimangal")) # @step:sylhet-send,sylhet-done
 `
 
 export const ruby: CodeSet = {
