@@ -1,9 +1,10 @@
 # Design Pattern Playground
 
 A bilingual (English + বাংলা) React app that teaches software design patterns through
-interactive, real-world visual scenarios. Patterns are added **one at a time**, and every
-pattern follows the exact format described below. `src/patterns/strategy/` is the
-reference implementation: when in doubt, copy what it does.
+real-world stories and **3-level games**: learners learn by playing. Patterns are added
+**one at a time**, and every pattern follows the exact format described below.
+`src/patterns/strategy/` and `src/patterns/factory-method/` are the reference
+implementations: when in doubt, copy what they do.
 
 ---
 
@@ -20,8 +21,10 @@ Follow these steps in order.
 1. **Resolve the id** from `src/patterns/catalog.ts` (e.g. "builder" → `builder`). The
    folder name, `id` and URL slug must all be this id. Check it isn't already in
    `src/patterns/registry.ts`.
-2. **Study the reference.** Read every file in `src/patterns/strategy/`, plus
-   `src/components/visual/index.tsx` and `src/types/pattern.ts`.
+2. **Study the references.** Read every file in `src/patterns/strategy/` and
+   `src/patterns/factory-method/` (both are 3-level games), plus
+   `src/components/game/` (index.tsx + state.ts), `src/components/visual/index.tsx`,
+   `src/hooks/useStepPlayer.ts` and `src/types/pattern.ts`.
 3. **Design before coding.** Decide these and keep them consistent across all files:
    - **Scenario:** use the idea from the [scenario table](#scenario-ideas) unless the user
      gave one. Make it a small, concrete, Bangladeshi everyday story with named people
@@ -29,7 +32,8 @@ Follow these steps in order.
    - **Roles:** map each pattern participant (e.g. Director, Builder, ConcreteBuilder,
      Product) to an object in the story. Every role appears as a `<Node>` whose
      `role` label is the pattern term.
-   - **Interaction: a 3-level game.** Learners learn by playing (see
+   - **Interaction: a 3-level game.** Start from the pattern's row in the
+     [scenario table](#scenario-ideas). Learners learn by playing (see
      [Learn-by-playing games](#learn-by-playing-games)):
      1. **No pattern**: the learner does the messy job by hand; wrong choices fail in a
         fun way. Code panel shows `without`.
@@ -39,10 +43,12 @@ Follow these steps in order.
         by answering 2 concept questions, sees "0 lines of old code edited", and uses it.
         Code panel shows `with`.
      Every turn ends with Play running an animated, code-synced timeline. That's the
-     "aha" moment.
-   - **Step list:** an ordered list of step ids. Each id must match a
-     `// @step:<id>` marker in `main` of **every** code language, and each must have a
-     caption in `content.steps`.
+     "aha" moment. Plan 3 turns (orders, customers, requests…) per level, the wrong
+     answers and their hints, and the 2 concept questions for level 3.
+   - **Step lists:** one per level. Each id must match a `// @step:<id>` marker in
+     **every** code language: level 1 ids in `without`, level 2 ids in `main`, level 3
+     (building + using the new class) ids in `with`. Each needs a caption in
+     `content.steps`.
    - **Without vs With:** the messy alternative shows the real pain, e.g. a telescoping
      constructor, a giant if/else, duplicated code or tight coupling. The "with" side
      shows how easy the next change becomes.
@@ -71,6 +77,17 @@ Follow these steps in order.
      language (all 10 are walked; a language whose `@step` ids differ from TypeScript
      logs a warning)
    - visible `{{placeholders}}`
+
+   `check:pattern` only steps through the **first turn of level 1** (the tutorial). So
+   also **play the whole game** with a throwaway Puppeteer script
+   (`scripts/.tmp-playtest.mjs`, deleted afterwards; copy the pattern from
+   `scripts/check-pattern.mjs`): every level and turn, at least one wrong answer per
+   level, the level-3 builder, in EN desktop and বাংলা dark 360px. Fail on any console
+   warning/error, print the highlighted code line at key moments, and screenshot the
+   `#visual` element at each key moment. Drive it with these hooks:
+   `[data-player="play"]`, `[data-game="after-outcome"]` (Next / Try again),
+   `[data-game="next-level"]`, `[data-game="open-branch"]` (finish the level-3 builder),
+   and `#visual [role=radiogroup|group] [role=radio|checkbox]` for choices.
 7. **Look at the screenshots** it writes to `.check/<id>/` (open the PNGs with the Read
    tool) and fix anything that looks broken or cramped:
    - text overflowing its box
@@ -79,16 +96,19 @@ Follow these steps in order.
    - Bangla that looks squeezed
    - code that isn't highlighted in some language (screenshots for non-default code
      languages end in `-<lang>`, e.g. `en-full-python.png`)
+   - in the playtest shots: a broken level, a hint that doesn't explain, a failure that
+     isn't visible, or a level-complete card that doesn't fit at 360px
 8. **Report back** briefly, and **stop there; don't commit yet**:
-   - the scenario and the learner's choice
+   - the scenario and the 3 levels (what the learner does, what goes wrong, the
+     level-3 questions)
    - what animates
-   - the check results
+   - the check and playtest results
    - anything you were unsure about, e.g. a Bangla phrasing, a simplification, or a
      language where the pattern had to be expressed differently (e.g. Go, Rust)
    - the commit message you propose
 9. **Commit only after the user confirms** (see [Git & commits](#git--commits)), with a
    message like `Add Builder pattern: custom PC build at the computer market` (with the
-   scenario in the title and a short body listing what the visual shows).
+   scenario in the title and a short body listing the 3 levels).
 
 ### Definition of done (quality bar)
 
@@ -170,11 +190,12 @@ them from the pattern's data, so a pattern can't skip or reorder them:
 
 1. **Real-world scenario**: the story (`content.scenario`), plus "The problem" and the
    pattern's intent in one sentence.
-2. **Interactive visualization**: `Visual.tsx`. The learner chooses something, presses
-   Play or Step, and watches objects and messages animate, with a "What's happening"
-   caption for each step.
+2. **Interactive visualization**: `Visual.tsx`, a 3-level game. In each turn the learner
+   chooses something, presses Play or Step, and watches objects and messages animate,
+   with a "What's happening" caption for each step.
 3. **Code panel**: `main`, with a `Java | C# | TS | Python | Go | …` switch above it. The line that is
    currently "running" is highlighted in sync with the visualization, in every language.
+   The game switches it to `without` (level 1) or `with` (level 3 building) as needed.
 4. **Without vs With**: `without` (the messy version) next to `with` (the pattern
    version) in the chosen language, followed by bullet points, "Why it's better" and
    "When to use".
@@ -190,7 +211,7 @@ src/patterns/<id>/
 │   ├── index.ts    export const xCode: PatternCode = { java, csharp, ts, python, go, rust, cpp, php, ruby, swift }
 │   ├── ts.ts       export const ts: CodeSet = { main, without, with }   (code as strings)
 │   └── java.ts, csharp.ts, python.ts, go.ts, rust.ts, cpp.ts, php.ts, ruby.ts, swift.ts
-└── Visual.tsx      export default function XVisual({ content, lang, onCodeStep }: VisualProps<XContent>)
+└── Visual.tsx      export default function XVisual({ content, lang, onCodeStep, onCodeView }: VisualProps<XContent>)
 ```
 
 `category` and `icon` come from the pattern's catalog entry.
@@ -204,7 +225,7 @@ src/patterns/<id>/
 | `intent` | The pattern in 1–2 sentences |
 | `scenario` | `{ title, paragraphs[2–3], problem }` |
 | `visual` | **Every** label `Visual.tsx` shows, as a flat object of strings. `{{name}}` placeholders are allowed |
-| `steps` | Caption per step id (plus `idle`, and any interaction captions like `set-strategy`) |
+| `steps` | Caption per step id, plus idle / tutorial captions, wrong-answer hints, builder questions and `level1-done` … `level3-done` |
 | `codeComments` | Text for each `// {{key}}` in any `code/*.ts` (shared by all code languages) |
 | `compare` | `{ without: { title, points[4] }, with: { title, points[4] }, benefit, whenToUse[3] }` |
 
@@ -400,34 +421,36 @@ Both built patterns are 3-level games; copy `factory-method/Visual.tsx` or
 
 ## Scenario ideas
 
-Defaults for each pattern, all relatable Bangladeshi everyday situations. Use the row
-for the requested pattern unless the user specifies otherwise.
+Defaults for each pattern, all relatable Bangladeshi everyday situations, with a sketch
+of the 3 levels: **L1** no pattern (the pain) → **L2** use the pattern → **L3** extend it
+with new classes only. Use the row for the requested pattern unless the user specifies
+otherwise; refine the details while designing.
 
-| Pattern | Scenario | Learner's choice → what animates |
+| Pattern | Scenario | L1 → L2 → L3 |
 |---|---|---|
-| ~~strategy~~ | ✅ built: online checkout, bKash / Nagad / Card | method → Checkout swaps strategy, payment flows |
-| factory-method | Courier company: the Dhaka branch ships by rickshaw-van, the Chattogram branch by truck, Barishal by launch | branch → its `createTransport()` makes the right vehicle, parcel travels |
-| abstract-factory | Restaurant combo kitchens: a Deshi kitchen (kacchi + borhani + firni) vs a Chinese kitchen (fried rice + soup + pudding); items must match | kitchen → factory produces a matching family of dishes |
-| builder | Building a custom PC at the computer market: CPU, RAM, SSD, GPU, casing step by step; a Director has "Office" and "Gaming" presets | preset or custom parts → builder adds parts one by one, then `build()` returns the PC |
-| prototype | Exam question paper: make Set A, B, C by cloning a master paper and shuffling questions | clone count or shuffle → copies are created from the prototype |
-| singleton | One shop cash box (ক্যাশবাক্স) shared by every salesperson; two boxes = mismatched totals | salespeople sell → all calls hit the same instance |
-| adapter | Shop's `PaymentStrategy` meets a new bank SDK with a different API; plus a 3-pin plug → 2-pin socket picture | provider → adapter translates the call shape |
-| bridge | Notifications: message types (OTP, promo, alert) × channels (SMS, email, push) without class explosion | type × channel → abstraction delegates to implementor |
-| composite | Bazar list: bags inside bags (fish bag, vegetable bag) plus loose items; total price | open bags → `getPrice()` recurses through the tree |
-| decorator | Jhalmuri or fuchka with add-ons (extra chanachur, egg, extra spicy), each adding price and description | toggle add-ons → wrappers stack, price grows |
-| facade | Cox's Bazar trip agency: one `bookTrip()` call hides bus, hotel, tour guide and SMS subsystems | package → facade calls every subsystem in order |
-| flyweight | City traffic map with thousands of rickshaws sharing one sprite and model (intrinsic) but own position (extrinsic) | rickshaw count → memory with and without sharing |
-| proxy | Exchange-rate API: a caching proxy in front of a slow bank rate service | request twice → first goes to the real service, second is served from cache |
-| chain-of-responsibility | Bank loan approval: officer → manager → branch head, by amount | loan amount → request passes along until someone handles it |
-| command | Restaurant order slips: the waiter creates command slips, the kitchen executes them, cancel = undo | add or cancel items → commands queue, execute, undo |
-| interpreter | Shop discount rules like `total > 1000 AND category = saree` | rule → expression tree evaluates against a cart |
-| iterator | Cricket team batting order: iterate in order, by strike rate, or only all-rounders | iterator type → same team, different traversal |
-| mediator | Airport control tower coordinating planes for one runway | planes request to land → all talk via the tower, not each other |
-| memento | Writing a social post with save points and undo | type, save, undo → editor state saved and restored |
-| observer | Live cricket score: app, SMS service and TV ticker subscribe to the match | subscribe or unsubscribe, ball bowled → notifications fan out |
-| state | Ride-sharing trip: Requested → Accepted → On trip → Completed / Cancelled | press actions → same button behaves differently per state |
-| template-method | Making cha vs coffee: same steps (boil, brew, pour, add-ons) with different details | drink → skeleton runs, subclass steps fill in |
-| visitor | VAT calculation over a cart with food, clothing and electronics at different rates | visitor (VAT, discount) → each item accepts the visitor |
+| ~~strategy~~ | ✅ built: Rahim's shop checkout, bKash / Nagad / Card | L1 tick each method's steps in one `checkout()` → L2 plug strategies into Checkout, swap one at runtime → L3 add `RocketPayment` |
+| ~~factory-method~~ | ✅ built: Sathi Courier, Dhaka van / Chattogram truck / Barishal launch | L1 pick every vehicle yourself → L2 hand parcels to branches, `createTransport()` decides → L3 build `SylhetBranch` + `Drone` |
+| abstract-factory | Restaurant combo kitchens: Deshi (kacchi + borhani + firni) vs Chinese (fried rice + soup + pudding) | L1 assemble each combo dish by dish; a mismatched combo (kacchi + soup) gets sent back → L2 pick a kitchen, its factory makes a matching family → L3 add a Thai kitchen (factory + 3 dishes), menu code untouched |
+| builder | Custom PC at the computer market: CPU, RAM, SSD, GPU, casing; Director presets "Office" and "Gaming" | L1 fill a telescoping `new PC(…)` constructor; wrong order or a missing part and it won't boot → L2 builder adds parts step by step, Director presets do it for you → L3 add a `QuotationBuilder`: the same Director steps now produce a price quote |
+| prototype | Exam papers: Set A, B, C cloned from a master paper, questions shuffled | L1 retype each set by hand; typos and slow → L2 `clone()` the master and shuffle → L3 add a new paper type (with diagrams) that implements `clone()`; the copier is unchanged |
+| singleton | One shop cash box (ক্যাশবাক্স) shared by every salesperson | L1 each salesperson does `new CashBox()`; totals don't match at closing → L2 everyone uses `CashBox.getInstance()`, totals match → L3 a new bKash counter joins and gets the same instance (questions: why a private constructor, why not a global) |
+| adapter | The shop's `PaymentStrategy` meets a new bank SDK with a different API (paisa, other method names) | L1 call the SDK directly and rewrite checkout for its shape; unit mismatch overcharges → L2 an adapter translates `pay(amount)` → SDK call → L3 a second SDK arrives: one new adapter, checkout untouched |
+| bridge | Notifications: message types (OTP, promo, alert) × channels (SMS, email, push) | L1 create a class per combination; a class counter explodes → L2 pick type + channel, abstraction delegates to implementor → L3 add WhatsApp: 1 new class instead of 3 |
+| composite | Bazar list: bags inside bags (fish bag, vegetable bag) plus loose items | L1 hand-written loops per nesting level; a bag inside a bag breaks the total → L2 `getPrice()` recurses the tree → L3 add a gift-box container; total code unchanged |
+| decorator | Fuchka or jhalmuri with add-ons (extra chanachur, egg, extra spicy) | L1 a subclass per combination (`FuchkaWithEggAndSpicy`…) explodes → L2 stack wrappers, price and description grow → L3 add a new topping (tok-doi) as one decorator |
+| facade | Cox's Bazar trip agency: bus, hotel, tour guide and SMS subsystems | L1 the client books every subsystem in the right order; wrong order fails → L2 one `bookTrip()` hides it → L3 add a travel-insurance subsystem inside the facade; clients unchanged |
+| flyweight | City traffic map with thousands of rickshaws | L1 each rickshaw gets its own sprite; the memory bar overflows as the count grows → L2 shared sprite (intrinsic) + own position (extrinsic), memory stays flat → L3 add CNGs as another flyweight |
+| proxy | Exchange-rate API: a caching proxy in front of a slow bank rate service | L1 every request waits for the slow bank (timer, cost) → L2 caching proxy, the second request is instant → L3 add a logging / rate-limit proxy; the client is unchanged |
+| chain-of-responsibility | Bank loan approval: officer → manager → branch head, by amount | L1 one function with nested ifs routes loans; the learner routes them by hand → L2 the request passes along until someone handles it → L3 insert a regional-manager handler without editing the others |
+| command | Restaurant order slips: waiter writes slips, kitchen executes, cancel = undo | L1 the waiter shouts straight at the cook; no queue, no undo → L2 command slips queue, execute, undo → L3 add a new command ("make it spicy") as one class |
+| interpreter | Shop discount rules like `total > 1000 AND category = saree` | L1 hard-coded ifs; every new rule means editing code → L2 build the rule from expression blocks and evaluate it against a cart → L3 add an `OR` / `NOT` expression type |
+| iterator | Cricket team batting order | L1 a different hand-written loop for each traversal inside Team → L2 pick an iterator (in order, by strike rate, all-rounders); same team → L3 add a "left-handers only" iterator |
+| mediator | Airport control tower and one runway | L1 planes talk to each other directly; links multiply and two planes collide → L2 every plane talks only to the tower → L3 add a helicopter colleague; planes unchanged |
+| memento | Writing a social post with save points and undo | L1 undo by copying fields by hand; a field gets missed → L2 save / restore mementos → L3 add an image field; the caretaker is unchanged |
+| observer | Live cricket score: app, SMS service and TV ticker | L1 the Match calls each display directly; adding one means editing Match → L2 subscribe / unsubscribe, a ball bowled fans out → L3 add a Facebook-page subscriber with 0 edits to Match |
+| state | Ride-sharing trip: Requested → Accepted → On trip → Completed / Cancelled | L1 a giant switch in every button handler; an illegal action slips through → L2 state objects decide what each button does → L3 add a "Waiting for rider" state |
+| template-method | Making cha vs coffee: boil, brew, pour, add-ons | L1 two copy-pasted recipes; a fix has to be made twice → L2 the skeleton runs, subclasses fill in the steps → L3 add lemon tea, overriding only the add-ons step |
+| visitor | VAT over a cart of food, clothing and electronics at different rates | L1 VAT code inside every item class; a discount means editing them all → L2 a `VatVisitor` visits each item → L3 add a `DiscountVisitor` without touching the item classes |
 
 ## Conventions
 
@@ -437,8 +460,9 @@ for the requested pattern unless the user specifies otherwise.
   in `components/visual`, `components/ui`, `hooks` or `lib`.
 - `erasableSyntaxOnly` is on, so app code can't use `enum` or constructor parameter
   properties. (Code *strings* shown to learners may use them.)
-- Don't change shared components in a way that changes Strategy's look or behavior
-  without re-running `npm run check:pattern -- strategy`.
+- After changing anything shared (`components/game`, `components/visual`, `PatternPage`,
+  `CodePanel`, `lib/code.ts`…), re-run `npm run check:pattern -- <id>` for **every** built
+  pattern in `registry.ts`.
 
 ## Git & commits
 
