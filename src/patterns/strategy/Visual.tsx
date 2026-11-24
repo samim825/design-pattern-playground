@@ -1,8 +1,10 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { type ReactNode, useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { StepControls } from '@/components/ui/StepControls'
+import { Caption, Connector, Node, Packet, Stage, StatusDot, type Status } from '@/components/visual'
 import { type PlayerStep, useStepPlayer } from '@/hooks/useStepPlayer'
 import { formatNumber, formatTaka } from '@/lib/format'
+import { fill } from '@/lib/template'
 import type { VisualProps } from '@/types/pattern'
 import type { StrategyContent } from './content.en'
 
@@ -59,8 +61,6 @@ function buildSteps(m: Method): VisualStep[] {
 }
 
 const round2 = (n: number) => Math.round(n * 100) / 100
-const fill = (template: string, values: Record<string, string>) =>
-  template.replace(/\{\{(\w+)\}\}/g, (_, key: string) => values[key] ?? `{{${key}}}`)
 
 /* ------------------------------------------------------------------ */
 /* Visual                                                              */
@@ -128,7 +128,7 @@ export default function StrategyVisual({ content, lang, onCodeStep }: VisualProp
     '3ds': v.proc3ds,
     bank: v.procBank,
   }
-  const procStatus = (i: number): 'pending' | 'active' | 'done' => {
+  const procStatus = (i: number): Status => {
     const stepIndex = 2 + i // after client-pay and delegate
     if (player.index > stepIndex) return 'done'
     if (player.index === stepIndex) return 'active'
@@ -144,7 +144,7 @@ export default function StrategyVisual({ content, lang, onCodeStep }: VisualProp
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="rounded-xl border-2 border-edge bg-paper-deep p-3 shadow-hard sm:p-5">
+      <Stage>
         {/* ── Client ─────────────────────────────────────────── */}
         <Node role={v.clientRole} title={`🛒 ${v.clientTitle}`} active={kind === 'client-pay' || kind === 'done'} accent="#0b6b4f">
           <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)]">
@@ -347,175 +347,13 @@ export default function StrategyVisual({ content, lang, onCodeStep }: VisualProp
             </motion.div>
           </AnimatePresence>
         </Node>
-      </div>
+      </Stage>
 
       {/* ── Caption ──────────────────────────────────────────── */}
-      <div className="relative min-h-24 rounded-xl border-2 border-edge bg-card px-4 py-3 shadow-hard">
-        <p className="mb-1 label-caps text-chili">💬 
-          {v.whatsHappening}
-        </p>
-        <AnimatePresence mode="wait" initial={false}>
-          <motion.p
-            key={`${captionKey}-${lang}`}
-            initial={{ opacity: 0, y: 4 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -4 }}
-            transition={{ duration: 0.15 }}
-            className="prose-text text-sm text-ink"
-            aria-live="polite"
-          >
-            {caption}
-          </motion.p>
-        </AnimatePresence>
-      </div>
+      <Caption label={v.whatsHappening} text={caption} stepKey={`${captionKey}-${lang}`} />
 
       <StepControls player={controls} playLabel={fill(v.payButton, { amount: formatTaka(AMOUNT, lang) })} />
       <p className="text-xs text-ink-soft">* {v.feeNote}</p>
     </div>
   )
-}
-
-/* ------------------------------------------------------------------ */
-/* Building blocks                                                     */
-/* ------------------------------------------------------------------ */
-
-function Node({
-  role,
-  title,
-  active,
-  accent,
-  mono = false,
-  children,
-}: {
-  role: string
-  title: string
-  active: boolean
-  accent: string
-  mono?: boolean
-  children: ReactNode
-}) {
-  return (
-    <motion.div
-      animate={{ scale: active ? 1.015 : 1 }}
-      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-      className="relative rounded-xl border-2 border-edge bg-card p-3 shadow-hard-sm transition-[box-shadow] duration-300 sm:p-4"
-      style={active ? { boxShadow: `4px 4px 0 0 var(--c-shade), 0 0 0 4px ${accent}55` } : undefined}
-    >
-      <div className="mb-3 flex flex-wrap items-center gap-2">
-        <span className="rounded border-2 border-edge/40 px-1.5 py-px text-[10px] font-bold tracking-[0.15em] text-ink-soft uppercase">
-          {role}
-        </span>
-        <span
-          lang={mono ? 'en' : undefined}
-          className={`font-bold text-ink ${mono ? 'font-mono text-sm' : 'font-display text-base'}`}
-        >
-          {title}
-        </span>
-      </div>
-      {children}
-    </motion.div>
-  )
-}
-
-/** Vertical arrow between two nodes; a packet travels down (request) or up (receipt). */
-function Connector({
-  label,
-  down,
-  up,
-  downPacket,
-  upPacket,
-  runKey,
-}: {
-  label: string
-  down: boolean
-  up: boolean
-  downPacket: ReactNode
-  upPacket: ReactNode
-  runKey: number
-}) {
-  const active = down || up
-  return (
-    <div className="relative h-16">
-      <div
-        className={`absolute inset-y-1 left-1/2 w-1 -translate-x-1/2 rounded-full transition-colors ${
-          active ? 'bg-chili' : 'bg-edge/40'
-        }`}
-      />
-      <svg
-        className={`absolute bottom-0 left-1/2 -translate-x-1/2 transition-colors ${
-          active ? 'text-chili' : 'text-edge/40'
-        }`}
-        width="12"
-        height="8"
-        viewBox="0 0 12 8"
-        aria-hidden="true"
-      >
-        <path d="M0 0h12L6 8z" fill="currentColor" />
-      </svg>
-      <code
-        lang="en"
-        className={`absolute top-1/2 right-[calc(50%+1rem)] -translate-y-1/2 truncate font-mono text-[11px] transition-colors sm:text-xs ${
-          active ? 'font-bold text-chili' : 'text-ink-soft/70'
-        }`}
-      >
-        {label}
-      </code>
-      <AnimatePresence>
-        {down && (
-          <motion.div
-            key={`down-${runKey}`}
-            className="absolute left-[calc(50%+0.75rem)]"
-            initial={{ top: '-15%', opacity: 0 }}
-            animate={{ top: '55%', opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.8, ease: 'easeInOut' }}
-          >
-            {downPacket}
-          </motion.div>
-        )}
-        {up && (
-          <motion.div
-            key={`up-${runKey}`}
-            className="absolute left-[calc(50%+0.75rem)]"
-            initial={{ top: '70%', opacity: 0 }}
-            animate={{ top: '0%', opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.8, ease: 'easeInOut' }}
-          >
-            {upPacket}
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  )
-}
-
-function Packet({ color, children }: { color: string; children: ReactNode }) {
-  return (
-    <span
-      className="inline-flex items-center gap-1 rounded-full border-2 border-[#2b1d16] px-2 py-0.5 text-xs font-bold whitespace-nowrap text-white"
-      style={{ backgroundColor: color }}
-    >
-      {children}
-    </span>
-  )
-}
-
-function StatusDot({ status, color }: { status: 'pending' | 'active' | 'done'; color: string }) {
-  if (status === 'done') {
-    return (
-      <span className="grid size-5 shrink-0 place-items-center rounded-full border-2 border-edge bg-bottle text-[10px] font-bold text-cream">✓</span>
-    )
-  }
-  if (status === 'active') {
-    return (
-      <motion.span
-        className="size-5 shrink-0 rounded-full border-[3px] border-t-transparent"
-        style={{ borderColor: color, borderTopColor: 'transparent' }}
-        animate={{ rotate: 360 }}
-        transition={{ repeat: Infinity, duration: 0.8, ease: 'linear' }}
-      />
-    )
-  }
-  return <span className="size-5 shrink-0 rounded-full border-2 border-dashed border-edge/40" />
 }

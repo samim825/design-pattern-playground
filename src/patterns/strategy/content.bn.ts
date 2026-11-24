@@ -21,13 +21,18 @@ export const bn: DeepPartial<StrategyContent> = {
   },
 
   visual: {
+    // Pattern-role and class names stay in English on purpose.
+    clientRole: 'Client',
     clientTitle: 'রহিমের কার্ট',
     tshirt: 'টি-শার্ট',
     mug: 'মগ',
     total: 'মোট',
     chooseMethod: 'পেমেন্ট মেথড',
+    contextRole: 'Context',
+    contextTitle: 'Checkout',
     unchanged: 'Checkout-এর কোড একটুও বদলায়নি',
     strategyRole: 'Concrete strategy-গুলো',
+    implementsLabel: 'implements PaymentStrategy',
     bkash: 'বিকাশ',
     nagad: 'নগদ',
     card: 'কার্ড',

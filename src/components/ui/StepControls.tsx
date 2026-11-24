@@ -23,18 +23,18 @@ export function StepControls({
   return (
     <div className="flex flex-wrap items-center gap-2">
       {playing ? (
-        <Button variant="primary" onClick={player.pause}>
+        <Button variant="primary" onClick={player.pause} data-player="pause">
           <PauseIcon /> {t('player.pause')}
         </Button>
       ) : (
-        <Button variant="primary" onClick={player.play} disabled={disabled}>
+        <Button variant="primary" onClick={player.play} disabled={disabled} data-player="play">
           <PlayIcon /> {done ? t('player.replay') : (playLabel ?? t('player.play'))}
         </Button>
       )}
-      <Button onClick={player.next} disabled={disabled || done} aria-label={t('player.step')}>
+      <Button onClick={player.next} disabled={disabled || done} aria-label={t('player.step')} data-player="step">
         <StepIcon /> <span className="hidden sm:inline">{t('player.step')}</span>
       </Button>
-      <Button variant="ghost" onClick={player.reset} disabled={index < 0} aria-label={t('player.reset')}>
+      <Button variant="ghost" onClick={player.reset} disabled={index < 0} aria-label={t('player.reset')} data-player="reset">
         <ResetIcon /> <span className="hidden sm:inline">{t('player.reset')}</span>
       </Button>
 
