@@ -1,0 +1,212 @@
+import type { DeepPartial } from '@/types/pattern'
+import type { BuilderContent } from './content.en'
+
+// Technical terms stay in English (Builder, Director, class, method, constructor…).
+// Anything missing here falls back to content.en.ts automatically.
+export const bn: DeepPartial<BuilderContent> = {
+  title: 'Builder',
+  tagline: 'জটিল object একটা বিশাল constructor দিয়ে নয়, ধাপে ধাপে, নাম ধরে ধরে বানান।',
+  intent:
+    'জটিল একটা object কীভাবে জোড়া লাগানো হবে, আর কোন কোন ধাপে, এই দুটোকে আলাদা করুন: builder একটা একটা করে অংশ যোগ করে, আর director কমন রেসিপিগুলো জানে। ফলে একই ধাপ থেকে আলাদা আলাদা ফল পাওয়া যায়।',
+
+  scenario: {
+    title: 'কম্পিউটার মার্কেটে কাস্টম পিসি',
+    paragraphs: [
+      'এলিফ্যান্ট রোডের কম্পিউটার মার্কেটে করিমের একটা ছোট পিসির দোকান। প্রত্যেক কাস্টমার আলাদা মেশিন চায়: নুসরাতের লাগবে স্প্রেডশিটের জন্য অফিস পিসি, মিতুর কোডিংয়ের জন্য স্টুডেন্ট পিসি, আর রহিমের একটা গেমিং রিগ।',
+      'প্রতিটা পিসি একই ধরনের অংশ দিয়ে বানানো (CPU, RAM, স্টোরেজ, চাইলে একটা গ্রাফিক্স কার্ড, আর একটা কেসিং), শুধু পছন্দগুলো আলাদা। অফিস পিসির দাম পড়ে প্রায় ৳২১,৮০০; গেমিংটার ৳৯৬,৫০০।',
+      'করিমের টেকনিশিয়ান জনপ্রিয় রেসিপিগুলো মুখস্থ জানে। শিগগিরই কাস্টমাররা কেনার আগে একটা ছাপানো দামের কোটেশনও চাইবে, ঠিক একই রেসিপি থেকে বানানো।',
+    ],
+    problem:
+      "পিসি যদি শুধু একটা লম্বা constructor দিয়েই বানানো যায়, new PC('Core i3', 8, '256GB SSD', null, 'Mini tower', false, false), তাহলে যে-ই কল করুক, তাকে সাতটা argument-এর ক্রম মনে রাখতে হবে, আর যে অংশ লাগবে না তার জায়গায় null দিতে হবে। নতুন একটা অপশন যোগ হলেই সব কল ভেঙে যায়।",
+  },
+
+  visual: {
+    // Pattern-role and class names stay in English on purpose.
+    levelsLabel: 'গেমের লেভেল',
+    levelLabel: 'লেভেল {{n}}',
+    level1Title: 'একটাই লম্বা constructor',
+    level2Title: 'Builder + Director',
+    level3Title: 'নতুন ধরনের builder',
+    level1Goal: 'এখনো কোনো pattern নেই: পিসি বানাতে হয় new PC(…) দিয়ে, argument-গুলো নির্দিষ্ট ক্রমে দিয়ে। প্রত্যেক কাস্টমারের অংশগুলো ঠিক ঠিক জায়গায় বসান।',
+    level2Goal: 'এবার builder নাম ধরে অংশ বসায়, আর টেকনিশিয়ান (Director) রেসিপিগুলো জানে। প্রত্যেক কাস্টমারের জন্য ঠিক রেসিপিটা বাছুন।',
+    level3Goal: 'কাস্টমাররা আগে একটা ছাপানো দামের কোটেশন চায়। কোটেশন লেখার একটা builder যোগ করুন, রেসিপিগুলো এডিট না করেই আবার ব্যবহার করে।',
+    locked: 'লক করা',
+    earned: 'বিক্রি',
+    restart: 'গেম আবার শুরু',
+    customerOf: 'কাস্টমার {{n}}/{{total}}',
+
+    clientRole: 'Client',
+    counterTitle: 'কাউন্টারে',
+    needsLabel: 'কাজ',
+    wantsPc: 'পিসিটাই চায়',
+    wantsQuote: 'আগে দামের কোটেশন চায়',
+    noGpu: 'গ্রাফিক্স কার্ড লাগবে না',
+    pickParts: 'Constructor-এর ক্রমে অংশগুলোতে ট্যাপ করুন',
+    clearSlots: 'মুছুন',
+    pickPreset: 'টেকনিশিয়ানের কাছে একটা রেসিপি চান',
+    pickBuilder: 'কোন builder?',
+    noPatternRole: 'Pattern ছাড়া',
+    argsLabel: 'যত argument মনে রাখতে হয়',
+    directorRole: 'Director',
+    directorTitle: 'Technician',
+    onlyInterface: 'শুধু ComputerBuilder-এর সাথে কথা বলে',
+    noRecipe: 'এখনো কোনো রেসিপি বাছা হয়নি…',
+    concreteBuilderRole: 'ConcreteBuilder',
+    productRole: 'Product',
+    builderTag: 'Builder',
+    productTag: 'Product',
+    implementsLabel: 'implements',
+    emptyCase: 'খালি কেস: এখনো কোনো অংশ নেই',
+    emptyQuote: 'খালি কোটেশন: এখনো কোনো লাইন নেই',
+    skipped: 'বাদ',
+    buildSlot: 'বানান',
+    newTag: 'নতুন',
+    boots: 'চালু হলো!',
+    noBoot: 'চালু হয় না',
+    quoteTitle: 'দামের কোটেশন',
+    total: 'মোট',
+
+    office: 'অফিস',
+    student: 'স্টুডেন্ট',
+    gaming: 'গেমিং',
+    needOffice: 'স্প্রেডশিট, ইমেইল আর অনলাইন ব্যাংকিং',
+    needStudent: 'বিশ্ববিদ্যালয়ে কোডিং আর হালকা ভিডিও এডিটিং',
+    needGaming: 'হাই সেটিংসে 1080p গেমিং',
+    pcBuilder: 'পিসি',
+    quoteBuilder: 'কোটেশন',
+
+    partCpu: 'CPU',
+    partRam: 'RAM',
+    partStorage: 'স্টোরেজ',
+    partGpu: 'গ্রাফিক্স কার্ড',
+    partCasing: 'কেসিং',
+    nullCard: 'null (কিছু না)',
+
+    builderTitle: 'QuotationBuilder যোগ করুন',
+    builderStep1: 'ধাপ ১ · এটা কী হবে?',
+    builderStep2: 'ধাপ ২ · আর Director?',
+    q1: 'QuotationBuilder কী হওয়া উচিত?',
+    q1Implements: 'implements ComputerBuilder',
+    q1ExtendsDirector: 'extends Technician',
+    q1InPc: 'PC-তে একটা quote() method',
+    q2: 'Technician-এ কী বদলাবে?',
+    q2Nothing: 'কিছুই না',
+    q2NewMethod: 'buildGamingQuote() যোগ',
+    q2Flag: 'একটা isQuote flag যোগ',
+    useBuilder: 'QuotationBuilder ব্যবহার করুন',
+    zeroEdits: 'Technician আর PCBuilder এডিট: ০ লাইন',
+
+    buildButton: 'বানান',
+    nextCustomer: 'পরের কাস্টমার',
+    finishLevel: 'লেভেল শেষ করুন',
+    tryAgain: 'আবার চেষ্টা করুন',
+
+    levelDone: 'লেভেল {{n}} শেষ!',
+    nextLevel: 'পরের লেভেল',
+    replayLevel: 'এই লেভেল আবার খেলুন',
+    playAgain: 'লেভেল ১ থেকে আবার খেলুন',
+    l1Teaser:
+      'তারপর দোকানে Wi-Fi কার্ড আর RGB ফ্যানও বিক্রি শুরু হলো। প্রতিটা নতুন অপশন মানে constructor-এ আরেকটা argument, আর আগের প্রতিটা new PC(…) কল বদলাতে হবে। নিশ্চয়ই এর চেয়ে ভালো উপায় আছে…',
+    l2Summary:
+      'আপনি একবারও জায়গা ধরে argument দেননি। টেকনিশিয়ান ধাপে ধাপে, নাম ধরে builder-কে কল করেছে, আর রেসিপিতে যে অংশ লাগে না, সেটা সোজা বাদ দিয়েছে।',
+    recapTitle: 'যা শিখলেন',
+    recap1: 'লম্বা constructor হলে কলারকে argument-এর জায়গা মনে রাখতে হয়, আর অদরকারি অংশের জায়গায় null দিতে হয়।',
+    recap2: 'Builder-এ অংশ যোগ হয় নাম ধরে, ধাপে ধাপে, আর Director কমন রেসিপিগুলো এক জায়গায় রাখে।',
+    recap3: 'নতুন builder (QuotationBuilder) একই Director-এর ধাপ আবার ব্যবহার করে আলাদা ফল বানায়, কিছু এডিট না করেই।',
+
+    nusrat: 'নুসরাত',
+    rahim: 'রহিম',
+    mitu: 'মিতু',
+
+    whatsHappening: 'এখন কী ঘটছে',
+    priceNote: 'দামগুলো শুধু উদাহরণের জন্য, আসল বাজারদর নয়।',
+  },
+
+  steps: {
+    tutorial:
+      'নুসরাতের অফিস পিসি। এবারের মতো new PC(…) আমরাই ভরে দিয়েছি: CPU, RAM, স্টোরেজ, “গ্রাফিক্স কার্ড লাগবে না” বলে null, তারপর কেসিং। “বানান” চাপুন, আর দেখুন constructor প্রতিটা জায়গা কীভাবে মেলায়।',
+    idle1: 'কাস্টমার {{name}}। Constructor-এর ক্রমে অংশগুলো new PC(…)-এ বসান: cpu, ramGb, storage, gpu, casing। গ্রাফিক্স কার্ড লাগবে না? null দিন।',
+    filled1: 'পাঁচটা argument-ই বসানো হয়েছে। পিসি চালু হয় কিনা দেখতে “বানান” চাপুন।',
+    'l1-call': 'new PC(…) কল হলো একসারি argument দিয়ে। কোন মানটা কী, কোথাও লেখা নেই; শুধু জায়গা দেখে বোঝা যায়।',
+    'l1-arg-ok': '{{n}} নম্বর জায়গাটা {{param}}: “{{part}}” ঠিক বসেছে।',
+    'l1-arg-null': '{{n}} নম্বর জায়গাটা {{param}}: এই কাস্টমারের এটা লাগবে না, তাই null দিতে হয়েছে।',
+    'l1-arg-bad': '{{n}} নম্বর জায়গাটা {{param}}, কিন্তু আপনি দিয়েছেন “{{part}}”। একই রকম দেখতে argument পাশাপাশি থাকলে গুলিয়ে ফেলা খুব সহজ।',
+    'l1-ok': 'চালু হলো! +{{total}}। কিন্তু প্রতিটা argument-এর জায়গা আপনাকে মনে রাখতে হয়েছে, আর না-লাগা অংশের জন্য null দিতে হয়েছে।',
+    'l1-fail': '💨 চালু হয় না: “{{part}}” ঢুকে গেছে {{param}} হিসেবে। কোন মানটা কী, constructor আপনাকে বলতে পারেনি।',
+    'level1-done': 'লেভেল শেষ! কোডের হাইলাইট করা লাইনটা দেখুন: পিসির প্রতিটা নতুন অপশন মানে এই constructor বদলানো, আর এর প্রতিটা কল বদলানো।',
+
+    idle2: '{{name}} পিসি চায় এই কাজে: {{need}}। টেকনিশিয়ানের (Director) কাছে ঠিক রেসিপিটা চেয়ে “বানান” চাপুন।',
+    'wrong-preset': '{{preset}} রেসিপিটা এখানে মানায় না: {{name}} পিসি চায় এই কাজে: {{need}}। অন্য রেসিপি দেখুন।',
+    ready: '{{method}}() বাছা হয়েছে। “বানান” চাপুন, আর দেখুন টেকনিশিয়ান ধাপে ধাপে builder-কে কল করছে।',
+    'new-builder': 'Client একটা PCBuilder বানাল: একটা খালি কেস, অংশের অপেক্ষায়।',
+    director:
+      'Client builder-টা টেকনিশিয়ানের হাতে দিল: technician.{{method}}(builder)। রেসিপি জানে Director; অংশ বসাতে জানে builder।',
+    part: 'টেকনিশিয়ান কল করছে b.{{call}}। Builder সেটা নাম ধরে বসাচ্ছে, তাই ক্রম বা জায়গা নিয়ে কোনো চিন্তা নেই।',
+    build: 'builder.build() পুরো তৈরি পিসিটা দিয়ে দিল। Product হাতে আসে শুধু সম্পূর্ণ হওয়ার পরই।',
+    done: 'চালু হলো! +{{total}}। একই PCBuilder আলাদা পিসি বানাল, কারণ Director আলাদা ধাপ কল করেছে।',
+    'done-no-gpu': 'চালু হলো! +{{total}}। খেয়াল করুন: setGpu() কল নেই, null-ও নেই। রেসিপি অদরকারি অংশ সোজা বাদ দেয়।',
+    'level2-done': 'লেভেল শেষ! জায়গা ধরে argument নেই, null নেই: Director নাম ধরে ধাপ কল করেছে, আর কাজটা করেছে builder।',
+
+    idle3: '{{name}} {{want}}, কাজ: {{need}}। Builder আর রেসিপি বেছে “বানান” চাপুন।',
+    'need-build': '{{name}} শুধু কাগজে একটা দামের কোটেশন চায়, আর কোটেশন বানানোর মতো builder এখনো নেই। QuotationBuilder যোগ করতে “বানান”-এ ট্যাপ করুন।',
+    'wrong-builder': '{{name}} {{want}}। অন্য builder-টা বাছুন।',
+    'build-q1': 'প্রথমে: QuotationBuilder কী হওয়া উচিত?',
+    'wrong-extends-director': 'টেকনিশিয়ান হলো Director: সে ধাপ ঠিক করে, নিজে কিছু বানায় না। বানানো builder-এর কাজ।',
+    'wrong-in-pc': 'PC-তে quote method রাখলে দুটো কাজ মিশে যায়: কোটেশনের প্রতিটা বদলে PC class-এ হাত পড়বে।',
+    'build-q2': 'QuotationBuilder, ComputerBuilder implement করে। এবার: Technician-এ (Director) কী বদলাতে হবে?',
+    'wrong-new-method': 'নতুন method লাগবে না: buildGaming(b) যেকোনো ComputerBuilder-এর সাথেই কাজ করে, কোটেশনও তার মধ্যে।',
+    'wrong-flag': 'Flag দিলে Director-কে কোটেশনের কথা জানতে হবে। তার শুধু ComputerBuilder interface চেনা উচিত।',
+    'build-ready': 'হয়ে গেছে: একটা নতুন class, আর কিছুই এডিট হয়নি। “QuotationBuilder ব্যবহার করুন” চাপুন।',
+    'build-done': 'QuotationBuilder তৈরি, আর Technician-এ হাতই পড়েনি। রেসিপি বেছে “বানান” চাপুন।',
+    'ready-q': 'QuotationBuilder আর {{method}}() বাছা হয়েছে। “বানান” চাপুন: একই রেসিপি এবার একটা কোটেশন লিখবে।',
+    'q-new': 'Client এবার PCBuilder-এর বদলে একটা QuotationBuilder বানাল।',
+    'q-director': 'ঠিক সেই technician.{{method}}(…) চলছে: আসল পিসির জন্য যে ধাপগুলো, হুবহু সেগুলোই।',
+    'q-part': 'b.{{call}} এবার অংশ বসানোর বদলে কোটেশনে একটা লাইন যোগ করছে: {{value}} = {{price}}।',
+    'q-build': 'getQuote() তৈরি কোটেশনটা ফেরত দিল: মোট {{total}}।',
+    'q-done': 'কোটেশন হাতে দেওয়া হলো: {{total}}। একই Director, একই ধাপ, আলাদা ফল।',
+    'level3-done': 'গেম শেষ! Builder রেসিপিকে (Director) আর জোড়া লাগানোকে (builder) আলাদা রাখে, তাই যেকোনো একটা দিক আলাদাভাবে বদলানো যায়।',
+  },
+
+  codeComments: {
+    product: 'Product: যেটা বানানো হচ্ছে',
+    builder: 'Builder: প্রতিটা builder এই ধাপগুলো দেয়',
+    concreteBuilder: 'Concrete builder: আসল একটা পিসি জোড়া লাগায়',
+    director: 'Director: রেসিপি জানে, অংশ নয়',
+    optional: 'শুধু গেমিং পিসিতে GPU থাকে',
+    usage: 'Client কোড',
+    usagePreset: 'অথবা buildOffice / buildStudent',
+    withoutIntro: 'একটা constructor, সাতটা জায়গা-নির্ভর argument',
+    withoutOrder: 'কোন মানটা কী? শুধু জায়গা দেখেই বুঝতে হয়',
+    withoutTodo: 'Wi-Fi কার্ডও বিক্রি করবেন? Constructor আর ওপরের প্রতিটা কল বদলান',
+    withAdd: 'নতুন builder: একই ধাপ, কিন্তু পিসির বদলে দামের কোটেশন',
+    withSame: 'Director আর তার রেসিপিগুলো যেমন ছিল তেমনই কাজে লাগছে',
+  },
+
+  compare: {
+    without: {
+      title: 'সাতটা argument-ওয়ালা একটা constructor',
+      points: [
+        'কলারকে প্রতিটা argument-এর হুবহু ক্রম মনে রাখতে হয়।',
+        'অপশনাল অংশের জন্য null বা false বসিয়ে জায়গা ভরাতে হয়।',
+        'একই রকম দেখতে argument (পরপর তিনটা string) ভুল করে অদলবদল হয়ে যায়।',
+        'নতুন অপশন (Wi-Fi, RGB ফ্যান) যোগ করলে constructor বদলায়, আর সব কল ভেঙে যায়।',
+      ],
+    },
+    with: {
+      title: 'একটা builder, আর রেসিপি-জানা একজন director',
+      points: [
+        'অংশ যোগ হয় নাম ধরে (setCpu(), setRam()…), তাই ক্রম বা জায়গা কোনো ব্যাপার না।',
+        'অপশনাল অংশ সোজা বাদ দেওয়া যায়; null লাগে না।',
+        'Director কমন রেসিপিগুলো (অফিস, স্টুডেন্ট, গেমিং) এক জায়গায় রাখে।',
+        'নতুন builder (QuotationBuilder) একই রেসিপি দিয়ে আলাদা ফল বানায়।',
+      ],
+    },
+    benefit:
+      'Builder "কীভাবে জোড়া লাগাবে" (builder) আর "কোন ধাপ, কোন ক্রমে" (director), এই দুটোকে আলাদা করে। দুই দিকই আলাদাভাবে বদলানো যায়: নতুন রেসিপিতে builder-এ হাত দিতে হয় না, আর নতুন builder সব রেসিপির সাথেই কাজ করে।',
+    whenToUse: [
+      'Object-এর অনেক অংশ বা অপশন আছে, আর constructor-এ লম্বা, গোলমেলে argument-এর তালিকা লাগবে।',
+      'অল্প কয়েকটা কমন রেসিপি থেকে একই ধরনের object বারবার বানাতে হয়।',
+      'একই ধাপগুলো থেকে আলাদা ফল দরকার (একটা product, একটা কোটেশন, একটা সারাংশ)।',
+    ],
+  },
+}
