@@ -5,6 +5,7 @@ import { bridge } from './bridge'
 import { builder } from './builder'
 import { catalog } from './catalog'
 import { chainOfResponsibility } from './chain-of-responsibility'
+import { command } from './command'
 import { composite } from './composite'
 import { decorator } from './decorator'
 import { facade } from './facade'
@@ -33,6 +34,7 @@ export const patterns: PatternDefinition[] = [
   flyweight,
   proxy,
   chainOfResponsibility,
+  command,
   strategy,
 ]
 
