@@ -4,7 +4,8 @@
  * pattern folder) when a new pattern needs a variant.
  */
 import { AnimatePresence, motion } from 'framer-motion'
-import type { ReactNode } from 'react'
+import { type ReactNode, useEffect, useRef } from 'react'
+import { scrollNodeIntoView } from './follow'
 
 export type Status = 'pending' | 'active' | 'done'
 
@@ -38,11 +39,19 @@ export function Node({
   className?: string
   children?: ReactNode
 }) {
+  // While a run is being followed, bring the node where the action is into view.
+  const ref = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (active) scrollNodeIntoView(ref.current)
+  }, [active])
+
   return (
     <motion.div
+      ref={ref}
+      data-node-active={active}
       animate={{ scale: active ? 1.015 : 1 }}
       transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-      className={`relative rounded-xl border-2 border-edge bg-card p-3 shadow-hard-sm transition-[box-shadow] duration-300 sm:p-4 ${className}`}
+      className={`relative scroll-mt-28 scroll-mb-44 rounded-xl border-2 border-edge bg-card p-3 shadow-hard-sm transition-[box-shadow] duration-300 sm:p-4 ${className}`}
       style={active ? { boxShadow: `4px 4px 0 0 var(--c-shade), 0 0 0 4px ${accent}55` } : undefined}
     >
       <div className={`flex flex-wrap items-center gap-2 ${children ? 'mb-3' : ''}`}>
@@ -170,10 +179,14 @@ export function StatusDot({ status, color = '#0b6b4f' }: { status: Status; color
   return <span className="size-5 shrink-0 rounded-full border-2 border-dashed border-edge/40" />
 }
 
-/** The "What's happening" speech bubble under a visualization. */
+/**
+ * The "What's happening" speech bubble under a visualization. It sticks to the
+ * bottom of the screen while the stage is in view, so the explanation stays
+ * readable while the page follows the action.
+ */
 export function Caption({ label, text, stepKey }: { label: string; text: string; stepKey: string }) {
   return (
-    <div className="relative min-h-24 rounded-xl border-2 border-edge bg-card px-4 py-3 shadow-hard">
+    <div className="sticky bottom-2 z-20 min-h-24 rounded-xl border-2 border-edge bg-card px-4 py-3 shadow-hard">
       <p className="mb-1 label-caps text-chili">💬 {label}</p>
       <AnimatePresence mode="wait" initial={false}>
         <motion.p

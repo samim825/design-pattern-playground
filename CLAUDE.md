@@ -96,6 +96,8 @@ Follow these steps in order.
    - Bangla that looks squeezed
    - code that isn't highlighted in some language (screenshots for non-default code
      languages end in `-<lang>`, e.g. `en-full-python.png`)
+   - in the playtest shots (take them at 360px *viewport*, not only of `#visual`): the
+     active node is on screen at each step and not hidden under the sticky caption
    - in the playtest shots: a broken level, a hint that doesn't explain, a failure that
      isn't visible, or a level-complete card that doesn't fit at 360px
 8. **Report back** briefly, and **stop there; don't commit yet**:
@@ -118,6 +120,9 @@ Follow these steps in order.
       recap. Every turn's Play runs at least 5 animated steps, where messages or objects
       visibly move between `<Node>`s. The first turn is a guided tutorial (choice
       pre-selected) so `check:pattern` can step through it.
+- [ ] **The page follows the action**: every step marks the `<Node>` where it happens as
+      `active`, so on a phone Play/Step scrolls to it step by step (see
+      [Follow the action](#writing-visualtsx)). The caption stays readable at the bottom.
 - [ ] Every step highlights the matching code line(s), and every caption explains *why*,
       not just *what*.
 - [ ] Code exists in **all 10 languages**: Java, C#, TS (type-enforced) plus Python,
@@ -351,7 +356,9 @@ Both built patterns are 3-level games; copy `factory-method/Visual.tsx` or
   - `<Connector label down up downPacket upPacket runKey>` is an arrow with a moving
     `<Packet>`.
   - `<StatusDot status>` marks progress inside a node's step list.
-  - `<Caption label text stepKey>` is the "What's happening" bubble.
+  - `<Caption label text stepKey>` is the "What's happening" bubble. It is sticky to the
+    bottom of the screen, so it stays readable while the page scrolls. Render exactly
+    one, right above `<StepControls>`.
 
   Need a variant, e.g. a horizontal connector? Add it to `components/visual`, not to the
   pattern folder.
@@ -377,6 +384,19 @@ Both built patterns are 3-level games; copy `factory-method/Visual.tsx` or
   `grid-cols-3` or fewer, `truncate` on long class names, and no fixed widths over 300px.
 - Animate with Framer Motion: `AnimatePresence` for swaps and entries, `layout` for moving
   items. The app already respects reduced motion.
+- **Follow the action.** On a phone the stage is taller than the screen, and Play sits at
+  the bottom, so the learner must *see* each step without scrolling by hand. This is
+  built in; the pattern only has to feed it correctly:
+  - Pressing Play or Step (`<StepControls>`) starts "following"; the run ending, Reset or
+    the learner scrolling by hand stops it (`components/visual/follow.ts`).
+  - While following, every `<Node>` that becomes `active` scrolls itself into view
+    (only if it isn't already fully visible, clear of the header and sticky caption).
+  - So **every step must set `active` on the node where that step happens**, the one
+    sending, receiving or changing. A step with no active node, or the wrong one, leaves
+    the learner looking at the wrong place. When two nodes are active, the one that
+    becomes active last is scrolled to.
+  - Don't add your own `scrollIntoView` / `window.scrollTo` in `Visual.tsx`. If a part
+    of the stage that isn't a `<Node>` must be followed, extend `components/visual`.
 
 ## Bilingual rules
 

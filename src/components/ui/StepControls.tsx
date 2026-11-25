@@ -1,4 +1,6 @@
 import { useTranslation } from 'react-i18next'
+import { useEffect } from 'react'
+import { startFollowing, stopFollowing } from '@/components/visual/follow'
 import { SPEEDS, type StepPlayer } from '@/hooks/useStepPlayer'
 import { useLang } from '@/i18n'
 import { formatNumber } from '@/lib/format'
@@ -20,6 +22,25 @@ export function StepControls({
   const lang = useLang()
   const { playing, done, index, total } = player
 
+  // Follow the action while a run is going, and stop once it ends.
+  // (Nodes are rendered before the controls, so the last step still scrolls first.)
+  useEffect(() => {
+    if (done) stopFollowing()
+  }, [done])
+
+  const play = () => {
+    startFollowing()
+    player.play()
+  }
+  const next = () => {
+    startFollowing()
+    player.next()
+  }
+  const reset = () => {
+    stopFollowing()
+    player.reset()
+  }
+
   return (
     <div className="flex flex-wrap items-center gap-2">
       {playing ? (
@@ -27,14 +48,14 @@ export function StepControls({
           <PauseIcon /> {t('player.pause')}
         </Button>
       ) : (
-        <Button variant="primary" onClick={player.play} disabled={disabled} data-player="play">
+        <Button variant="primary" onClick={play} disabled={disabled} data-player="play">
           <PlayIcon /> {done ? t('player.replay') : (playLabel ?? t('player.play'))}
         </Button>
       )}
-      <Button onClick={player.next} disabled={disabled || done} aria-label={t('player.step')} data-player="step">
+      <Button onClick={next} disabled={disabled || done} aria-label={t('player.step')} data-player="step">
         <StepIcon /> <span className="hidden sm:inline">{t('player.step')}</span>
       </Button>
-      <Button variant="ghost" onClick={player.reset} disabled={index < 0} aria-label={t('player.reset')} data-player="reset">
+      <Button variant="ghost" onClick={reset} disabled={index < 0} aria-label={t('player.reset')} data-player="reset">
         <ResetIcon /> <span className="hidden sm:inline">{t('player.reset')}</span>
       </Button>
 
