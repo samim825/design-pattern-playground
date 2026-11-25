@@ -5,6 +5,7 @@ import { bridge } from './bridge'
 import { builder } from './builder'
 import { catalog } from './catalog'
 import { composite } from './composite'
+import { decorator } from './decorator'
 import { factoryMethod } from './factory-method'
 import { prototype } from './prototype'
 import { singleton } from './singleton'
@@ -23,6 +24,7 @@ export const patterns: PatternDefinition[] = [
   adapter,
   bridge,
   composite,
+  decorator,
   strategy,
 ]
 
