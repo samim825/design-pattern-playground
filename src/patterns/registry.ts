@@ -11,6 +11,7 @@ import { decorator } from './decorator'
 import { facade } from './facade'
 import { flyweight } from './flyweight'
 import { factoryMethod } from './factory-method'
+import { interpreter } from './interpreter'
 import { prototype } from './prototype'
 import { proxy } from './proxy'
 import { singleton } from './singleton'
@@ -35,6 +36,7 @@ export const patterns: PatternDefinition[] = [
   proxy,
   chainOfResponsibility,
   command,
+  interpreter,
   strategy,
 ]
 
