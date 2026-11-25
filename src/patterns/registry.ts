@@ -8,6 +8,7 @@ import { chainOfResponsibility } from './chain-of-responsibility'
 import { composite } from './composite'
 import { decorator } from './decorator'
 import { facade } from './facade'
+import { flyweight } from './flyweight'
 import { factoryMethod } from './factory-method'
 import { prototype } from './prototype'
 import { singleton } from './singleton'
@@ -28,6 +29,7 @@ export const patterns: PatternDefinition[] = [
   composite,
   decorator,
   facade,
+  flyweight,
   chainOfResponsibility,
   strategy,
 ]
