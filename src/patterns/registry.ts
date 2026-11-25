@@ -4,6 +4,7 @@ import { adapter } from './adapter'
 import { bridge } from './bridge'
 import { builder } from './builder'
 import { catalog } from './catalog'
+import { chainOfResponsibility } from './chain-of-responsibility'
 import { composite } from './composite'
 import { decorator } from './decorator'
 import { facade } from './facade'
@@ -27,6 +28,7 @@ export const patterns: PatternDefinition[] = [
   composite,
   decorator,
   facade,
+  chainOfResponsibility,
   strategy,
 ]
 
