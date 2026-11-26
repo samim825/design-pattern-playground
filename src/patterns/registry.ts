@@ -14,6 +14,7 @@ import { factoryMethod } from './factory-method'
 import { interpreter } from './interpreter'
 import { iterator } from './iterator'
 import { mediator } from './mediator'
+import { memento } from './memento'
 import { prototype } from './prototype'
 import { proxy } from './proxy'
 import { singleton } from './singleton'
@@ -41,6 +42,7 @@ export const patterns: PatternDefinition[] = [
   interpreter,
   iterator,
   mediator,
+  memento,
   strategy,
 ]
 
