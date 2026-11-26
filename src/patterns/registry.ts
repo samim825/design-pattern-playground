@@ -13,6 +13,7 @@ import { flyweight } from './flyweight'
 import { factoryMethod } from './factory-method'
 import { interpreter } from './interpreter'
 import { iterator } from './iterator'
+import { mediator } from './mediator'
 import { prototype } from './prototype'
 import { proxy } from './proxy'
 import { singleton } from './singleton'
@@ -39,6 +40,7 @@ export const patterns: PatternDefinition[] = [
   command,
   interpreter,
   iterator,
+  mediator,
   strategy,
 ]
 
